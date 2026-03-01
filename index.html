@@ -711,94 +711,189 @@ body {
 }
 
 /* ═══ RESPONSIVE ═══ */
-@media (max-width: 900px) {
-  .sidebar { width: 200px; min-width: 200px; }
-  .main { margin-left: 200px; }
-  .etl-grid { grid-template-columns: 1fr; }
-  .etl-arrow { display: none; }
-  .g2 { grid-template-columns: 1fr; }
+</style>
+
+
+
+<style>
+/* ═══ RESPONSIVE — Mobile Drawer Pattern ═══ */
+
+/* ── Tablet ≤900px: narrow sidebar ── */
+@media (max-width:900px){
+  .sidebar{width:220px;min-width:220px}
+  .main{margin-left:220px}
+  .g2,.g3{grid-template-columns:1fr}
+  .email-grid{flex-direction:column}
+  .doc-grid{grid-template-columns:1fr}
+  .tech-flow-grid{grid-template-columns:repeat(2,1fr)!important}
+  .topbar-pills{display:none}
+}
+
+/* ── Mobile ≤768px: full drawer ── */
+@media (max-width:768px){
+  /* Body */
+  body{display:block!important;overflow-x:hidden}
+
+  /* Sidebar: off-canvas drawer */
+  .sidebar{
+    position:fixed!important;
+    top:0;left:0;bottom:0;right:auto;
+    width:280px!important;min-width:0!important;
+    height:100dvh!important;
+    overflow-y:auto!important;overflow-x:hidden!important;
+    transform:translateX(-100%);
+    transition:transform .28s cubic-bezier(.4,0,.2,1);
+    z-index:999!important;
+    border-right:2px solid var(--border2)!important;
+    display:flex!important;flex-direction:column!important;
+    box-shadow:4px 0 24px rgba(0,0,0,.7);
+  }
+  .sidebar.mob-open{transform:translateX(0)!important}
+
+  /* Close button inside sidebar: show on mobile */
+  #sidebarCloseBtn{display:flex!important}
+
+  /* Sidebar internals */
+  .sidebar-logo{padding:14px 12px 10px!important}
+  .sidebar-logo h1{font-size:18px!important}
+  .nav-label{font-size:9px!important;padding:8px 12px 3px!important}
+  .nav-item{font-size:11px!important;padding:10px 14px!important}
+  .sidebar-stats{padding:10px 12px!important}
+  .stat-item .k,.stat-item .v{font-size:10px!important}
+
+  /* Mobile top bar */
+  #mobBar{display:flex!important}
+
+  /* Main area */
+  .main{
+    margin-left:0!important;
+    width:100%!important;
+    min-width:0!important;
+    padding-top:50px!important;
+  }
+
+  /* Topbar inside .main */
+  .topbar{
+    padding:10px 14px!important;
+    position:sticky;
+    top:0;
+    z-index:50;
+  }
+  .topbar-title{
+    font-size:12px!important;
+    max-width:80%;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .topbar-pills{display:none!important}
+
+  /* Pages */
+  .page{padding:14px 10px 60px!important}
+
+  /* Headings */
+  .sh h2{font-size:16px!important}
+  h2{font-size:17px!important}
+  h3{font-size:13px!important}
+
+  /* Grids → single column */
+  .g2,.g3{grid-template-columns:1fr!important}
+  .email-grid{flex-direction:column!important}
+  .doc-grid{grid-template-columns:1fr!important}
+  .tech-flow-grid{grid-template-columns:repeat(2,1fr)!important}
+  .people-grid{grid-template-columns:repeat(2,1fr)!important}
+  .topic-grid{grid-template-columns:1fr!important}
+
+  /* Flow diagram */
+  .flow-layer{flex-direction:column!important;align-items:center!important;gap:6px!important;padding:8px 0!important}
+  .flow-node{max-width:92%!important;width:92%!important;min-width:0!important}
+  .flow-center{max-width:92%!important;padding:14px 16px!important}
+  .fn-name{font-size:11px!important}
+  .fn-role{font-size:9px!important}
+  .fn-emails{font-size:8px!important}
+
+  /* Cards */
+  .card{padding:12px!important}
+  .email-card{padding:0!important}
+  .email-header{flex-wrap:wrap;gap:8px!important;padding:10px 12px!important}
+  .email-subject{font-size:12px!important}
+  .email-from{font-size:10px!important}
+  .email-date{font-size:10px!important;margin-left:0!important;width:100%}
+  .email-body{padding:12px!important;font-size:12px!important;line-height:1.6!important}
+  .email-quote{font-size:10px!important;padding:8px 10px!important}
+  .email-tags{padding:8px 12px 10px!important;gap:4px!important}
+  .email-impact{padding:8px 12px!important;font-size:11px!important}
+  .doc-card{padding:10px!important}
+  .dc-title{font-size:11px!important}
+  .dc-text{font-size:10px!important;line-height:1.6!important}
+  .info-box{padding:12px 14px!important;font-size:12px!important}
+  .analysis-box{font-size:11px!important;padding:10px!important}
+  .email-raw{font-size:10px!important;padding:10px!important}
+
+  /* Accordion */
+  .acc-section{margin-bottom:12px!important}
+  .acc-header{flex-wrap:wrap;gap:6px!important;padding:12px 14px!important}
+  .acc-icon{font-size:20px!important}
+  .acc-title h3{font-size:12px!important;line-height:1.3}
+  .acc-sub{font-size:10px!important;line-height:1.4}
+  .acc-badge{font-size:9px!important;padding:2px 8px!important;order:4}
+  .acc-arrow{font-size:14px!important;order:5}
+  .acc-body{padding:12px 10px!important}
+
+  /* Timeline */
+  .timeline{padding-left:14px!important}
+  .tl-item{margin-bottom:16px!important}
+  .tl-item::before{left:-18px!important}
+  .tl-date{font-size:9px!important}
+  .tl-title{font-size:12px!important}
+  .tl-desc{font-size:11px!important;line-height:1.5!important}
+
+  /* People cards */
+  .person-card{padding:10px!important}
+  .person-name{font-size:11px!important}
+  .person-role{font-size:9px!important}
+
+  /* Topic cards */
+  .topic-card{padding:14px!important}
+  .topic-icon{font-size:22px!important}
+  .topic-name{font-size:13px!important}
+  .topic-desc{font-size:11px!important}
+
+  /* ETL / flow steps */
+  .etl-grid{grid-template-columns:1fr!important}
+  .etl-arrow{display:none!important}
+  .flow-row{flex-direction:column!important;gap:8px!important}
+  .flow-step{min-width:0!important;width:100%!important}
+  .fstep-arrow{display:none!important}
+}
+
+/* ── Small phones ≤480px ── */
+@media (max-width:480px){
+  .tech-flow-grid{grid-template-columns:1fr!important}
+  .people-grid{grid-template-columns:1fr!important}
+  .page{padding:10px 8px 60px!important}
+  .acc-header{padding:10px 10px!important}
+  .acc-title h3{font-size:11px!important}
+  .email-body{font-size:11px!important}
+  .topbar-title{font-size:11px!important}
+  .sidebar{width:90vw!important}
 }
 </style>
 
-<style>
-/* ══ RESPONSIVE MOBILE ══ */
-@media (max-width: 768px) {
-  body { flex-direction: column !important; }
-  .sidebar {
-    width: 100% !important;
-    height: auto !important;
-    min-height: unset !important;
-    position: relative !important;
-    overflow-y: visible !important;
-    display: flex !important;
-    flex-wrap: wrap !important;
-    gap: 0 !important;
-    padding: 8px !important;
-  }
-  .sidebar-logo { width: 100%; padding: 8px 0 4px !important; }
-  .sidebar-logo h1 { font-size: 20px !important; }
-  .sidebar-logo p { display: none; }
-  nav { width: 100%; display: flex; flex-wrap: wrap; gap: 4px; padding: 0 !important; }
-  .nav-section { width: 100%; }
-  .nav-label { font-size: 9px !important; padding: 4px 4px 2px !important; }
-  .nav-item {
-    font-size: 10px !important;
-    padding: 6px 8px !important;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .nav-icon { font-size: 12px !important; }
-  .nav-badge { font-size: 8px !important; padding: 1px 4px !important; }
-  .sidebar-stats { width: 100%; display: flex; flex-wrap: wrap; gap: 8px; padding: 6px !important; }
-  .stat-item { flex: 1; min-width: 80px; }
-  .main { padding: 12px 10px !important; }
-  .topbar { padding: 10px 12px !important; margin-bottom: 14px !important; }
-  .topbar-title { font-size: 13px !important; }
-  .topbar-pills { display: none !important; }
-  .g2, .g3 { grid-template-columns: 1fr !important; }
-  .doc-grid { grid-template-columns: 1fr !important; }
-  .tech-flow-grid { grid-template-columns: 1fr 1fr !important; }
-  .people-grid { grid-template-columns: 1fr 1fr !important; }
-  .email-grid { grid-template-columns: 1fr !important; }
-  .flow-layer { flex-direction: column; align-items: center; }
-  .flow-node { max-width: 100% !important; width: 90% !important; }
-  .flow-center { max-width: 90% !important; }
-  .acc-header { flex-wrap: wrap; gap: 8px; }
-  .acc-badge { order: 3; }
-  .acc-arrow { order: 4; }
-  h2 { font-size: 18px !important; }
-  h3 { font-size: 14px !important; }
-  .email-card { padding: 14px !important; }
-  .card { padding: 14px !important; }
-  .email-quote { font-size: 11px !important; }
-  .timeline { padding-left: 16px !important; }
-  .tl-date { min-width: 50px !important; font-size: 10px !important; }
-  .person-card { padding: 10px !important; }
-  .section-header { padding: 14px !important; }
-  /* Nav hamburger toggle */
-  .nav-toggle { display: flex !important; }
-  nav.nav-hidden { display: none !important; }
-}
-@media (max-width: 480px) {
-  .tech-flow-grid { grid-template-columns: 1fr !important; }
-  .people-grid { grid-template-columns: 1fr !important; }
-  .sidebar { padding: 4px !important; }
-  .nav-item { font-size: 9px !important; padding: 5px 6px !important; }
-  .main { padding: 8px 6px !important; }
-  .doc-card .dc-title, .doc-card .dc-text { font-size: 10px !important; }
-  .email-raw { font-size: 10px !important; }
-  .analysis-box { font-size: 11px !important; }
-}
-</style>
 </head>
 <body>
+<!-- ── MOB NAV ── -->
+<div id="mobBar" style="display:none;position:fixed;top:0;left:0;right:0;height:50px;background:var(--surface);border-bottom:1px solid var(--border);z-index:1000;align-items:center;padding:0 14px;gap:10px">
+  <button onclick="toggleMobNav()" style="background:rgba(255,255,255,.07);border:1px solid var(--border2);color:var(--text);width:38px;height:38px;border-radius:8px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">☰</button>
+  <span style="font-family:Syne,sans-serif;font-size:13px;font-weight:700;color:var(--teal);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1">JMAIL ETL · Archivos Epstein</span>
+</div>
+<div id="mobOverlay" onclick="closeMobNav()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:998;backdrop-filter:blur(2px)"></div>
 
 <!-- ═══ SIDEBAR ═══ -->
 
-<button class="nav-toggle" id="navToggle" onclick="toggleNav()" style="display:none;position:fixed;bottom:20px;right:20px;z-index:999;background:#ff2200;color:#fff;border:none;border-radius:50%;width:50px;height:50px;font-size:22px;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.4)">☰</button>
 <aside class="sidebar" id="sidebarEl">
-  <div class="sidebar-logo">
+  <div class="sidebar-logo" style="position:relative">
+    <button id="sidebarCloseBtn" onclick="closeMobNav()" style="display:none;position:absolute;top:10px;right:10px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);color:var(--text);width:32px;height:32px;border-radius:6px;font-size:16px;cursor:pointer;align-items:center;justify-content:center;line-height:1;z-index:2">✕</button>
     <h1>JMAIL ETL</h1>
     <p>Archivos Epstein · 2026</p>
   </div>
@@ -2457,20 +2552,6 @@ body {
     </div>
 
     <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-    
-function toggleNav() {
-  const nav = document.querySelector('nav');
-  nav.classList.toggle('nav-hidden');
-}
-
-// Show toggle button on mobile
-function checkMobile() {
-  const btn = document.getElementById('navToggle');
-  if (btn) btn.style.display = window.innerWidth <= 768 ? 'flex' : 'none';
-}
-window.addEventListener('resize', checkMobile);
-window.addEventListener('load', checkMobile);
-
 function toggleAcc(header) {
       header.classList.toggle('open');
       const body = header.nextElementSibling;
@@ -2897,8 +2978,8 @@ function toggleAcc(header) {
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:11px;color:var(--muted2)">
             <div><strong style="color:#fff">Fecha:</strong> Jul 12, 2019 · 4:29 PM</div>
             <div><strong style="color:#fff">Archivo:</strong> EFTA00103831 · DOJ Vol. 9</div>
-            <div><strong style="color:#fff">De:</strong> Jean James &lt;jeanjames@telus.net&gt;</div>
-            <div><strong style="color:#fff">Para:</strong> washington.field@ic.fbi.gov, newyork@ic.fbi.gov</div>
+            <div><strong style="color:#fff">De:</strong> Jean James &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b3d9d6d2ddd9d2ded6c0f3c7d6dfc6c09dddd6c7">[email&#160;protected]</a>&gt;</div>
+            <div><strong style="color:#fff">Para:</strong> <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a3d4c2d0cbcacdc4d7cccd8dc5cac6cfc7e3cac08dc5c1ca8dc4ccd5">[email&#160;protected]</a>, <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e9878c9e90869b82a9808ac78f8b80c78e869f">[email&#160;protected]</a></div>
             <div><strong style="color:#fff">Estrellas:</strong> ⭐121 (extremadamente alto)</div>
             <div><strong style="color:#fff">Comentarios:</strong> 33 personas comentaron</div>
             <div><strong style="color:#fff">Contexto:</strong> 28 días antes de la muerte de Epstein (10 ago 2019)</div>
@@ -2907,7 +2988,7 @@ function toggleAcc(header) {
         </div>
 
         <div class="email-raw" style="color:#ff9944;border-color:#ff6600">
-          <div class="raw-from">De: Jean James &lt;jeanjames@telus.net&gt; · Para: washington.field@ic.fbi.gov, newyork@ic.fbi.gov · Jul 12, 2019 · EFTA00103831</div>
+          <div class="raw-from">De: Jean James &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="96fcf3f7f8fcf7fbf3e5d6e2f3fae3e5b8f8f3e2">[email&#160;protected]</a>&gt; · Para: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5d2a3c2e3534333a293233733b343831391d343e733b3f34733a322b">[email&#160;protected]</a>, <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="aec0cbd9d7c1dcc5eec7cd80c8ccc780c9c1d8">[email&#160;protected]</a> · Jul 12, 2019 · EFTA00103831</div>
           <div class="raw-body">
             Asunto: <strong>TRANSATLANTIC PAEDOPHILIA CONNECTIONS?</strong><br><br>
             "Lord McAlpine - denies involvement PaedophiLes and Satamsts pervade the worLd of poLitics, royaLty, banking, corporations and media and it is just as rife in the UK Labour and Liberal Democrat pa rties as it is in the Conservatives - and among the Democrat and RepubLican eLite in the United St ates."<br><br>
@@ -2918,7 +2999,7 @@ function toggleAcc(header) {
 
         <div class="analysis-box" style="margin-top:12px">
           <div class="analysis-title">🔍 Contexto: Jean James escribe al FBI</div>
-          <p style="font-size:12px;color:var(--muted2);line-height:1.8;margin:0 0 8px">Jean James (jeanjames@telus.net — email canadiense) envió este documento directamente a los campos del FBI en Washington D.C. y Nueva York el <strong>12 de julio de 2019</strong> — 28 días antes de la muerte de Epstein. El documento de 42 páginas (extracto en el correo es de la página 32-33) acusa a líderes políticos del Reino Unido y Estados Unidos de pedofilia y contactos con redes transatlánticas.</p>
+          <p style="font-size:12px;color:var(--muted2);line-height:1.8;margin:0 0 8px">Jean James (<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="abc1cecac5c1cac6ced8ebdfcec7ded885c5cedf">[email&#160;protected]</a> — email canadiense) envió este documento directamente a los campos del FBI en Washington D.C. y Nueva York el <strong>12 de julio de 2019</strong> — 28 días antes de la muerte de Epstein. El documento de 42 páginas (extracto en el correo es de la página 32-33) acusa a líderes políticos del Reino Unido y Estados Unidos de pedofilia y contactos con redes transatlánticas.</p>
           <p style="font-size:12px;color:var(--muted2);line-height:1.8;margin:0">El email llegó al archivo DOJ de Epstein — lo que indica que el FBI lo procesó en relación con la investigación de Epstein. La <strong>Operation Ore</strong> fue una investigación real del FBI/Scotland Yard (2002-2007) sobre pornografía infantil que resultó en 3,744 arrestos en el Reino Unido. Algunos acusaban a Tony Blair de proteger a figuras de alto nivel.</p>
         </div>
 
@@ -3033,60 +3114,61 @@ function toggleAcc(header) {
 
 </main>
 
-<script>
-const titles = {
-  'emails-critical': '🔴 Correos Críticos / Secretos de Estado',
-  'emails-uk': '🇬🇧 UK Government / Mandelson',
-  'emails-tech': '💻 Red Tech — Musk, Gates, Silicon Valley',
-  'emails-science': '🔬 Red Científica de Epstein',
-  'ufo': '👽 UFOs, Telepathy & Fenómenos No-Locales',
-  'network': '🕸️ Red de Contactos — 44+ Nodos',
-  'timeline': '📅 Timeline 2025–2026',
-  'topics': '🏷️ Taxonomía de Temas',
-  'arrests': '🚔 Arrestos, Dimisiones y Consecuencias',
-  'classified': '🔐 Info Clasificada — Correos Reales de jmail.world',
-  'techflow': '🔬 Red Tecnológica Epstein — Diagrama de Flujo',
-  'adreno': '🩸 Adrenocromo & Rituales — Correos de jmail.world (EFTA)'
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+const titles={
+  'emails-critical':'🔴 Correos Críticos / Secretos de Estado',
+  'emails-uk':'🇬🇧 UK Government / Mandelson',
+  'emails-tech':'💻 Red Tech — Musk, Gates, Silicon Valley',
+  'emails-science':'🔬 Red Científica de Epstein',
+  'ufo':'👽 UFOs, Telepathy & Fenómenos No-Locales',
+  'network':'🕸️ Red de Contactos — 44+ Nodos',
+  'timeline':'📅 Timeline 2025–2026',
+  'topics':'🏷️ Taxonomía de Temas',
+  'arrests':'🚔 Arrestos, Dimisiones y Consecuencias',
+  'classified':'🔐 Info Clasificada — Correos Reales de jmail.world',
+  'techflow':'🔬 Red Tecnológica Epstein — Diagrama de Flujo',
+  'adreno':'🩸 Adrenocromo & Rituales — Correos de jmail.world (EFTA)'
 };
-
-function goto(id) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  const page = document.getElementById('page-' + id);
-  if (page) page.classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(n => {
-    const oc = n.getAttribute('onclick') || '';
-    if (oc.includes("'" + id + "'")) n.classList.add('active');
+function goto(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const page=document.getElementById('page-'+id);
+  if(page) page.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>{
+    if((n.getAttribute('onclick')||'').includes("'"+id+"'")) n.classList.add('active');
   });
-  const titleEl = document.getElementById('page-title');
-  if (titleEl && titles[id]) titleEl.textContent = titles[id];
-  window.scrollTo(0, 0);
+  const t=document.getElementById('page-title');
+  if(t&&titles[id]) t.textContent=titles[id];
+  window.scrollTo(0,0);
+  closeMobNav();
 }
-
-function toggleAcc(header) {
-  header.classList.toggle('open');
-  const body = header.nextElementSibling;
-  if (body) body.classList.toggle('open');
+function toggleAcc(h){
+  h.classList.toggle('open');
+  const b=h.nextElementSibling;
+  if(b) b.classList.toggle('open');
 }
-
-function toggleNav() {
-  const nav = document.querySelector('nav');
-  if (nav) nav.classList.toggle('nav-hidden');
+function toggleMobNav(){
+  const sb=document.getElementById('sidebarEl');
+  const ov=document.getElementById('mobOverlay');
+  const open=sb.classList.toggle('mob-open');
+  if(ov) ov.style.display=open?'block':'none';
 }
-
-function checkMobile() {
-  const btn = document.getElementById('navToggle');
-  if (btn) btn.style.display = window.innerWidth <= 768 ? 'flex' : 'none';
-  // Reset nav visibility on desktop
-  const nav = document.querySelector('nav');
-  if (nav && window.innerWidth > 768) nav.classList.remove('nav-hidden');
+function closeMobNav(){
+  const sb=document.getElementById('sidebarEl');
+  const ov=document.getElementById('mobOverlay');
+  if(sb) sb.classList.remove('mob-open');
+  if(ov) ov.style.display='none';
 }
-
-window.addEventListener('resize', checkMobile);
-window.addEventListener('load', () => {
-  checkMobile();
-  goto('emails-critical');
-});
+function updateMobUI(){
+  const mob = window.innerWidth <= 768;
+  const bar = document.getElementById('mobBar');
+  const closeBtn = document.getElementById('sidebarCloseBtn');
+  if(bar) bar.style.display = mob ? 'flex' : 'none';
+  if(closeBtn) closeBtn.style.display = mob ? 'flex' : 'none';
+  if(!mob) closeMobNav();
+}
+window.addEventListener('resize', updateMobUI);
+window.addEventListener('load',()=>{goto('emails-critical'); updateMobUI();});
 </script>
 </body>
 </html>
