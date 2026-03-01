@@ -719,11 +719,85 @@ body {
   .g2 { grid-template-columns: 1fr; }
 }
 </style>
+
+<style>
+/* ══ RESPONSIVE MOBILE ══ */
+@media (max-width: 768px) {
+  body { flex-direction: column !important; }
+  .sidebar {
+    width: 100% !important;
+    height: auto !important;
+    min-height: unset !important;
+    position: relative !important;
+    overflow-y: visible !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 0 !important;
+    padding: 8px !important;
+  }
+  .sidebar-logo { width: 100%; padding: 8px 0 4px !important; }
+  .sidebar-logo h1 { font-size: 20px !important; }
+  .sidebar-logo p { display: none; }
+  nav { width: 100%; display: flex; flex-wrap: wrap; gap: 4px; padding: 0 !important; }
+  .nav-section { width: 100%; }
+  .nav-label { font-size: 9px !important; padding: 4px 4px 2px !important; }
+  .nav-item {
+    font-size: 10px !important;
+    padding: 6px 8px !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .nav-icon { font-size: 12px !important; }
+  .nav-badge { font-size: 8px !important; padding: 1px 4px !important; }
+  .sidebar-stats { width: 100%; display: flex; flex-wrap: wrap; gap: 8px; padding: 6px !important; }
+  .stat-item { flex: 1; min-width: 80px; }
+  .main { padding: 12px 10px !important; }
+  .topbar { padding: 10px 12px !important; margin-bottom: 14px !important; }
+  .topbar-title { font-size: 13px !important; }
+  .topbar-pills { display: none !important; }
+  .g2, .g3 { grid-template-columns: 1fr !important; }
+  .doc-grid { grid-template-columns: 1fr !important; }
+  .tech-flow-grid { grid-template-columns: 1fr 1fr !important; }
+  .people-grid { grid-template-columns: 1fr 1fr !important; }
+  .email-grid { grid-template-columns: 1fr !important; }
+  .flow-layer { flex-direction: column; align-items: center; }
+  .flow-node { max-width: 100% !important; width: 90% !important; }
+  .flow-center { max-width: 90% !important; }
+  .acc-header { flex-wrap: wrap; gap: 8px; }
+  .acc-badge { order: 3; }
+  .acc-arrow { order: 4; }
+  h2 { font-size: 18px !important; }
+  h3 { font-size: 14px !important; }
+  .email-card { padding: 14px !important; }
+  .card { padding: 14px !important; }
+  .email-quote { font-size: 11px !important; }
+  .timeline { padding-left: 16px !important; }
+  .tl-date { min-width: 50px !important; font-size: 10px !important; }
+  .person-card { padding: 10px !important; }
+  .section-header { padding: 14px !important; }
+  /* Nav hamburger toggle */
+  .nav-toggle { display: flex !important; }
+  nav.nav-hidden { display: none !important; }
+}
+@media (max-width: 480px) {
+  .tech-flow-grid { grid-template-columns: 1fr !important; }
+  .people-grid { grid-template-columns: 1fr !important; }
+  .sidebar { padding: 4px !important; }
+  .nav-item { font-size: 9px !important; padding: 5px 6px !important; }
+  .main { padding: 8px 6px !important; }
+  .doc-card .dc-title, .doc-card .dc-text { font-size: 10px !important; }
+  .email-raw { font-size: 10px !important; }
+  .analysis-box { font-size: 11px !important; }
+}
+</style>
 </head>
 <body>
 
 <!-- ═══ SIDEBAR ═══ -->
-<aside class="sidebar">
+
+<button class="nav-toggle" id="navToggle" onclick="toggleNav()" style="display:none;position:fixed;bottom:20px;right:20px;z-index:999;background:#ff2200;color:#fff;border:none;border-radius:50%;width:50px;height:50px;font-size:22px;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.4)">☰</button>
+<aside class="sidebar" id="sidebarEl">
   <div class="sidebar-logo">
     <h1>JMAIL ETL</h1>
     <p>Archivos Epstein · 2026</p>
@@ -788,6 +862,9 @@ body {
         <span class="nav-icon">🔬</span> Tecnología — Diagrama Flujo
         <span style="position:absolute;top:4px;right:6px;background:#00d4b4;color:#000;font-size:8px;padding:1px 5px;border-radius:3px;font-weight:800">NEW</span>
         <span class="nav-badge" style="background:var(--teal);color:#000">NEW</span>
+            <div class="nav-item" onclick="goto('adreno')" style="border-left:2px solid #ff2200;position:relative">
+        <span class="nav-icon">🩸</span> Adrenocromo — jmail.world
+        <span style="position:absolute;top:4px;right:6px;background:#ff2200;color:#fff;font-size:8px;padding:1px 5px;border-radius:3px;font-weight:800">⭐67</span>
       </div>
     </div>
   </nav>
@@ -1475,7 +1552,7 @@ body {
       </div>
       <div class="acc-body">
         <div class="email-raw" style="color:#60a5fa;border-color:#3b82f6">
-          <div class="raw-from">Washington Post newsletter → inbox jeevacation@gmail.com · Apr 25, 2019</div>
+          <div class="raw-from">Washington Post newsletter → inbox <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e58f808093848684918c8a8ba58288848c89cb868a88">[email&#160;protected]</a> · Apr 25, 2019</div>
           <div class="raw-body">"<strong>Angry pilots got the Navy to stop dismissing UFO sightings</strong>" — artículo de Washington Post en el inbox de Epstein. Archivado 4 meses antes de su muerte (Aug 10, 2019).</div>
         </div>
         <div class="analysis-box">
@@ -1948,7 +2025,7 @@ body {
           </div>
           <div class="doc-card">
             <div class="dc-title">Epstein + Ministro Defensa Israel + Directora DARPA <span class="efta-tag">EFTA·Jul2011</span></div>
-            <div class="dc-date">Jul 26, 2011 · jeevacation@gmail.com</div>
+            <div class="dc-date">Jul 26, 2011 · <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="442e212132252725302d2b2a042329252d286a272b29">[email&#160;protected]</a></div>
             <div class="email-raw" style="color:#ff6060;border-color:#ff4040">
               <div class="raw-from">De: Jeffrey Epstein · A: [staff]</div>
               <div class="raw-body">"I don't know if regina-darpa is in NY sat... <strong>the Israeli defense minister will be with me</strong>, she might like to see him, he is super well informed"</div>
@@ -2101,7 +2178,7 @@ body {
       <div class="acc-body">
 
         <div class="email-raw" style="color:#a0a0ff;border-color:#8080ff">
-          <div class="raw-from">De: David Grosof → jeevacation@gmail.com · Mar 14, 2019 · ⭐8 estrellas · DOJ EFTA02631338</div>
+          <div class="raw-from">De: David Grosof → <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0e646b6b786f6d6f7a6761604e69636f6762206d6163">[email&#160;protected]</a> · Mar 14, 2019 · ⭐8 estrellas · DOJ EFTA02631338</div>
           <div class="raw-body">"This seems quite fundamental. <strong>What do you think of this?</strong><br>https://phys.org/news/2019-03-physicists-reverse-quantum.html<br>Please forgive typos. Sent from Moto X4 phone."</div>
         </div>
         <div class="analysis-box">
@@ -2268,7 +2345,7 @@ body {
       <div class="acc-body">
 
         <div class="email-raw" style="color:#4ade80;border-color:#22c55e">
-          <div class="raw-from">De: george church → jeevacation@gmail.com · Sep 6, 2014 · ⭐11 estrellas · Asunto: "Re: $200K"</div>
+          <div class="raw-from">De: george church → <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4c2629293a2d2f2d382523220c2b212d2520622f2321">[email&#160;protected]</a> · Sep 6, 2014 · ⭐11 estrellas · Asunto: "Re: $200K"</div>
           <div class="raw-body">"Each such DNA variant can be used to design and manufacture variant-specific <strong>RNAi molecules, proteins, and CRISPR guide-RNAs</strong>. The CRISPR is used for..."</div>
         </div>
         <div class="analysis-box">
@@ -2379,8 +2456,22 @@ body {
       <p style="font-size:12px;color:var(--muted2);max-width:800px;margin:0 auto;line-height:1.9">Los 1,038,603 correos revelan a Epstein no como un financiero, sino como un <strong style="color:#fff">nodo de inteligencia tecnológica</strong>: conectaba la directora de DARPA con ministros de defensa extranjeros (sin protocolo), financiaba papers del MIT para publicarlos bajo nombres ajenos, actuaba como distribuidor de ciencia de frontera para billonarios (Gates, Thiel, Pritzker), y mantenía acceso simultáneo a tecnología militar clasificada (Lowell Wood / SDI), biotecnología de vanguardia (Church / CRISPR), computación cuántica (Lloyd / MIT) y fenomenología de la consciencia (Penrose / Hameroff). Todo esto operando en paralelo a sus actividades criminales, sin cargo oficial alguno.</p>
     </div>
 
-    <script>
-    function toggleAcc(header) {
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    
+function toggleNav() {
+  const nav = document.querySelector('nav');
+  nav.classList.toggle('nav-hidden');
+}
+
+// Show toggle button on mobile
+function checkMobile() {
+  const btn = document.getElementById('navToggle');
+  if (btn) btn.style.display = window.innerWidth <= 768 ? 'flex' : 'none';
+}
+window.addEventListener('resize', checkMobile);
+window.addEventListener('load', checkMobile);
+
+function toggleAcc(header) {
       header.classList.toggle('open');
       const body = header.nextElementSibling;
       body.classList.toggle('open');
@@ -2535,7 +2626,7 @@ body {
         <div class="flow-center">
           <div style="font-size:36px;margin-bottom:8px">🕳️</div>
           <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:#ff4060">JEFFREY EPSTEIN</div>
-          <div style="font-size:10px;color:var(--muted2);margin-top:4px">jeevacation@gmail.com<br>1,038,603 correos · Jeffrey Epstein VI Foundation</div>
+          <div style="font-size:10px;color:var(--muted2);margin-top:4px"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a2c8c7c7d4c3c1c3d6cbcdcce2c5cfc3cbce8cc1cdcf">[email&#160;protected]</a><br>1,038,603 correos · Jeffrey Epstein VI Foundation</div>
         </div>
       </div>
 
@@ -2695,6 +2786,251 @@ body {
   </div>
 
 
+
+  <!-- ═══ PAGE: ADRENO ═══ -->
+  <div id="page-adreno" class="page">
+
+    <div style="background:linear-gradient(135deg,rgba(220,0,0,0.18),rgba(80,0,0,0.5));border:2px solid #ff2200;border-radius:16px;padding:28px;margin-bottom:28px;text-align:center">
+      <div style="font-size:44px;margin-bottom:10px">🩸</div>
+      <h2 style="font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:#ff4422;margin-bottom:8px">ADRENOCROMO — JMAIL.WORLD</h2>
+      <p style="color:var(--muted2);font-size:12px;max-width:760px;margin:0 auto;line-height:1.8">Lo que sigue son correos reales extraídos de jmail.world (EFTA DOJ). El correo principal sobre adrenocromo <strong style="color:#fff">no es de Epstein directamente</strong> — es material de terceros enviado al archivo. Se presenta tal como aparece en los documentos oficiales del DOJ, sin agregar interpretación.</p>
+      <div style="display:flex;gap:12px;justify-content:center;margin-top:14px;flex-wrap:wrap;font-size:11px">
+        <span style="background:rgba(255,34,0,0.2);border:1px solid #ff2200;padding:4px 12px;border-radius:20px;color:#ff8070">🩸 adrenochrome · 1 resultado directo</span>
+        <span style="background:rgba(255,34,0,0.2);border:1px solid #ff2200;padding:4px 12px;border-radius:20px;color:#ff8070">⭐ 67 estrellas · EFTA00165018</span>
+        <span style="background:rgba(255,34,0,0.2);border:1px solid #ff2200;padding:4px 12px;border-radius:20px;color:#ff8070">🏛️ DOJ Volume 9 · Dec 29, 2020</span>
+        <span style="background:rgba(255,100,0,0.2);border:1px solid #ff6600;padding:4px 12px;border-radius:20px;color:#ffaa70">🔗 satanic ritual · 2 resultados</span>
+        <span style="background:rgba(255,100,0,0.2);border:1px solid #ff6600;padding:4px 12px;border-radius:20px;color:#ffaa70">🧠 Rudolph Tanzi Harvard · 16 resultados</span>
+      </div>
+    </div>
+
+    <div class="info-box warn" style="border-color:#ff4422">
+      <div class="label" style="background:#ff2200">⚠️ Aviso importante</div>
+      <strong>El correo principal (EFTA00165018) contiene capturas de pantalla de conversaciones de terceros con acusaciones no verificadas.</strong> Hay una sola mención directa de "adrenochrome" en todo el archivo de 1,038,603 correos. El correo fue enviado al archivo DOJ el 29 dic 2020 — más de un año después de la muerte de Epstein (10 ago 2019). Las identidades están redactadas. Se reporta sin amplificar.
+    </div>
+
+    <!-- ACORDEÓN 1: CORREO PRINCIPAL -->
+    <div class="acc-section">
+      <div class="acc-header" onclick="toggleAcc(this)" style="border-color:rgba(255,34,0,0.5)">
+        <div class="acc-icon">📧</div>
+        <div class="acc-title">
+          <h3 style="color:#ff6644">EFTA00165018 — "[EXTERNAL EMAIL] - Hello again" ⭐67 estrellas</h3>
+          <div class="acc-sub">Dec 29, 2020 · [REDACTED] → [REDACTED] · DOJ Vol. 9 · Menciona: adrenochrome, templo subterráneo, Rudolph Tanzi (Harvard/Epstein), FBI</div>
+        </div>
+        <span class="acc-badge" style="background:rgba(255,34,0,0.2);color:#ff6644;border:1px solid #ff2200">⭐ 67 STARS</span>
+        <span class="acc-arrow">▼</span>
+      </div>
+      <div class="acc-body">
+
+        <div style="background:rgba(255,34,0,0.05);border:1px solid rgba(255,34,0,0.2);border-radius:10px;padding:16px;margin-bottom:16px">
+          <div style="font-size:12px;font-weight:700;color:#ff6644;margin-bottom:8px">📋 Metadatos del correo</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:11px;color:var(--muted2)">
+            <div><strong style="color:#fff">Fecha:</strong> Dec 29, 2020 · 3:59 AM</div>
+            <div><strong style="color:#fff">Archivo DOJ:</strong> EFTA00165018 – EFTA00165023</div>
+            <div><strong style="color:#fff">De:</strong> [REDACTED] &lt;[REDACTED]&gt;</div>
+            <div><strong style="color:#fff">Para:</strong> [REDACTED]</div>
+            <div><strong style="color:#fff">Estrellas:</strong> ⭐67 (muy alto — indica interés fuerte)</div>
+            <div><strong style="color:#fff">Comentarios:</strong> 22 comentarios en la cadena</div>
+            <div><strong style="color:#fff">Volumen DOJ:</strong> Vol. 9</div>
+            <div><strong style="color:#fff">Estado:</strong> Identidades redactadas por DOJ</div>
+          </div>
+        </div>
+
+        <div class="email-raw" style="color:#ff6644;border-color:#ff2200">
+          <div class="raw-from">De: [REDACTED] · A: [REDACTED] · Dec 29, 2020 · EFTA00165018</div>
+          <div class="raw-body">
+            "This article popped up JUST after my friend in Canada was telling me this story of her at four with <strong>RT Rudolph Rudi Tanzi, Harvard scientist for Epstein</strong>. I've also uploaded the following screenshots to the cloud drive I shared with you under folder Canada.<br><br>
+            [Link: https://people.com/crime/parents-of-dead-4-year-old-daughter-killed-by-neighbors-charged-with-child-]"
+          </div>
+        </div>
+
+        <div class="analysis-box" style="margin-top:12px">
+          <div class="analysis-title">🔍 Quién es Rudolph "Rudi" Tanzi</div>
+          <p style="font-size:12px;color:var(--muted2);line-height:1.8;margin:0 0 8px">Dr. Rudolph Tanzi es neurocientífico de Harvard, co-director del McCance Center for Brain Health en Mass General Hospital. Famoso por co-descubrir genes del Alzheimer. Colaboró con Deepak Chopra en varios libros sobre neurociencia y espiritualidad. Aparece en <strong>16 correos</strong> en jmail.world relacionados con el círculo Chopra-Epstein. Este correo lo menciona como "Harvard scientist for Epstein" — denominación que sugiere que era parte de la red científica financiada por Epstein.</p>
+          <p style="font-size:12px;color:var(--muted2);line-height:1.8;margin:0">El remitente (identidad redactada) dice que su amiga en Canadá le contó una historia sobre "RT" (Tanzi) cuando ella tenía cuatro años, que conecta con el artículo de People Magazine sobre el asesinato de una niña de 4 años por sus vecinos.</p>
+        </div>
+
+        <div class="doc-grid" style="margin-top:16px">
+          <div class="doc-card">
+            <div class="dc-title">EFTA00165018 — Screenshot 1: "Adrenochrome n organs" <span class="efta-tag">EFTA·Dec2020</span></div>
+            <div class="dc-date">Captura de pantalla de conversación en redes sociales</div>
+            <div class="dc-text" style="color:var(--muted2);font-size:11px;line-height:1.7">El remitente adjunta capturas de pantalla de conversaciones de redes sociales. La captura describe una conversación donde alguien afirma que existe una investigación necesaria sobre <strong style="color:#ff9980">"Adrenochrome n organs"</strong> y un <strong style="color:#ff9980">"underground temple"</strong>. El hablante afirma que alguien tiene <strong>"covered up stuff"</strong> y tiene conocimiento del "harvesting". La pregunta explícita en el texto: <em>"Can I tell the FBI this?"</em> — EFTA00165019.</div>
+          </div>
+          <div class="doc-card">
+            <div class="dc-title">EFTA00165019 — Screenshot 2: Templo subterráneo en la isla <span class="efta-tag">EFTA·Dec2020</span></div>
+            <div class="dc-date">Continuación de capturas de pantalla de Twitter/redes</div>
+            <div class="dc-text" style="color:var(--muted2);font-size:11px;line-height:1.7">Segunda captura: acusaciones de que <strong style="color:#ff9980">existe un templo subterráneo en la isla de Epstein</strong> con cemento encima y una "puerta falsa pintada en el edificio". Menciona <strong>"Ismaili satanic ritual abuse"</strong> y <strong>"sacrificing"</strong> en la isla. Una de las personas en la conversación dice no saber qué es "Ismaili" y que fue "una palabra aleatoria al escribir". EFTA00165020.</div>
+          </div>
+          <div class="doc-card">
+            <div class="dc-title">EFTA00165020 – 00165022 — Screenshots: "SumGurl07" + "RT" <span class="efta-tag">EFTA·Dec2020</span></div>
+            <div class="dc-date">Twitter DMs privados · Usuario: SumGurl07</div>
+            <div class="dc-text" style="color:var(--muted2);font-size:11px;line-height:1.7">Capturas de Twitter DMs del usuario "SumGurl07". La conversación describe: reclutadores de niños, control mental, <strong>"survivors witnessing children being murdered"</strong> para control futuro. Un individuo llamado "RT" (¿Rudolph Tanzi?) es descrito escondiéndose detrás de un arbusto y susurrando "it was a set up". Menciona "PTSD mind control". EFTA00165021-22.</div>
+          </div>
+          <div class="doc-card">
+            <div class="dc-title">EFTA00165023 — Screenshot final: "Harvard Scientist" + baldes negros <span class="efta-tag">EFTA·Dec2020</span></div>
+            <div class="dc-date">Screenshot final de la cadena</div>
+            <div class="dc-text" style="color:var(--muted2);font-size:11px;line-height:1.7">Última captura: alguien comparte imágenes etiquetadas <strong style="color:#ff9980">"Harvard Scientist"</strong> mencionando a Jeffrey Epstein. Describes personas sentadas en <strong>"Black buckets"</strong> y afirma que "Epstein los ordenó desde China porque los baldes blancos se manchaban". El destinatario responde: <strong style="color:#ff9980">"I believe it all."</strong> — Enviado desde iPhone. Identidad del destinatario: redactada.</div>
+          </div>
+        </div>
+
+        <div class="analysis-box" style="margin-top:14px;border-left:3px solid #ff2200">
+          <div class="analysis-title" style="color:#ff6644">⚖️ Evaluación del correo</div>
+          <p style="font-size:12px;color:var(--muted2);line-height:1.8;margin:0">Este correo <strong>no es de Epstein</strong> — llegó al archivo DOJ y tiene 67 estrellas, lo que indica que muchas personas en la red lo marcaron. El contenido consiste en capturas de pantalla de conversaciones no verificadas de Twitter/redes sociales. Las acusaciones (templo subterráneo cementado, cosecha de órganos, adrenocromo) son afirmaciones de anónimos de internet sin corroboración documental dentro del archivo. El correo sí confirma: (a) "RT Rudolph Rudi Tanzi" es identificado como "Harvard scientist for Epstein", (b) la persona que envía este material lo consideró lo suficientemente serio para compartirlo en la red que llegó al DOJ.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACORDEÓN 2: JEAN JAMES → FBI -->
+    <div class="acc-section">
+      <div class="acc-header" onclick="toggleAcc(this)" style="border-color:rgba(255,100,0,0.5)">
+        <div class="acc-icon">🏛️</div>
+        <div class="acc-title">
+          <h3 style="color:#ff9944">EFTA00103831 — Jean James → FBI Washington + New York ⭐121 estrellas</h3>
+          <div class="acc-sub">Jul 12, 2019 · 4:29 PM · Enviado DIRECTAMENTE al FBI · "TRANSATLANTIC PAEDOPHILIA CONNECTIONS?" · Prince Andrew, Tony Blair, Gordon Brown</div>
+        </div>
+        <span class="acc-badge" style="background:rgba(255,100,0,0.2);color:#ff9944;border:1px solid #ff6600">⭐ 121 STARS</span>
+        <span class="acc-arrow">▼</span>
+      </div>
+      <div class="acc-body">
+
+        <div style="background:rgba(255,100,0,0.05);border:1px solid rgba(255,100,0,0.2);border-radius:10px;padding:16px;margin-bottom:16px">
+          <div style="font-size:12px;font-weight:700;color:#ff9944;margin-bottom:8px">📋 Metadatos críticos</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:11px;color:var(--muted2)">
+            <div><strong style="color:#fff">Fecha:</strong> Jul 12, 2019 · 4:29 PM</div>
+            <div><strong style="color:#fff">Archivo:</strong> EFTA00103831 · DOJ Vol. 9</div>
+            <div><strong style="color:#fff">De:</strong> Jean James &lt;jeanjames@telus.net&gt;</div>
+            <div><strong style="color:#fff">Para:</strong> washington.field@ic.fbi.gov, newyork@ic.fbi.gov</div>
+            <div><strong style="color:#fff">Estrellas:</strong> ⭐121 (extremadamente alto)</div>
+            <div><strong style="color:#fff">Comentarios:</strong> 33 personas comentaron</div>
+            <div><strong style="color:#fff">Contexto:</strong> 28 días antes de la muerte de Epstein (10 ago 2019)</div>
+            <div><strong style="color:#fff">Mensaje 2 de 2</strong> en el hilo</div>
+          </div>
+        </div>
+
+        <div class="email-raw" style="color:#ff9944;border-color:#ff6600">
+          <div class="raw-from">De: Jean James &lt;jeanjames@telus.net&gt; · Para: washington.field@ic.fbi.gov, newyork@ic.fbi.gov · Jul 12, 2019 · EFTA00103831</div>
+          <div class="raw-body">
+            Asunto: <strong>TRANSATLANTIC PAEDOPHILIA CONNECTIONS?</strong><br><br>
+            "Lord McAlpine - denies involvement PaedophiLes and Satamsts pervade the worLd of poLitics, royaLty, banking, corporations and media and it is just as rife in the UK Labour and Liberal Democrat pa rties as it is in the Conservatives - and among the Democrat and RepubLican eLite in the United St ates."<br><br>
+            "Tony BLair is reported to have bLocked the exposure of famous names in Law, business and politic s, incLuding some in his own cabinet, during the police investigation into paedophiLe Internet act ivity known as <strong>Operation Ore</strong>..."<br><br>
+            "The figures in Operation Ore were enormous: 7,250 suspects identified, 4,283 homes searched, 3,744 arrests, 1,848 charged, 1,451 convictions..."
+          </div>
+        </div>
+
+        <div class="analysis-box" style="margin-top:12px">
+          <div class="analysis-title">🔍 Contexto: Jean James escribe al FBI</div>
+          <p style="font-size:12px;color:var(--muted2);line-height:1.8;margin:0 0 8px">Jean James (jeanjames@telus.net — email canadiense) envió este documento directamente a los campos del FBI en Washington D.C. y Nueva York el <strong>12 de julio de 2019</strong> — 28 días antes de la muerte de Epstein. El documento de 42 páginas (extracto en el correo es de la página 32-33) acusa a líderes políticos del Reino Unido y Estados Unidos de pedofilia y contactos con redes transatlánticas.</p>
+          <p style="font-size:12px;color:var(--muted2);line-height:1.8;margin:0">El email llegó al archivo DOJ de Epstein — lo que indica que el FBI lo procesó en relación con la investigación de Epstein. La <strong>Operation Ore</strong> fue una investigación real del FBI/Scotland Yard (2002-2007) sobre pornografía infantil que resultó en 3,744 arrestos en el Reino Unido. Algunos acusaban a Tony Blair de proteger a figuras de alto nivel.</p>
+        </div>
+
+        <div class="doc-grid" style="margin-top:16px">
+          <div class="doc-card">
+            <div class="dc-title">Operation Ore — Datos Reales (FBI/Scotland Yard, 2002)</div>
+            <div class="dc-date">Operación documentada, no teoría conspirativa</div>
+            <div class="dc-text" style="font-size:11px;color:var(--muted2);line-height:1.7">Operation Ore fue una investigación real transatlántica sobre pornografía infantil en internet. Datos oficiales: 7,250 sospechosos identificados · 4,283 hogares registrados · 3,744 arrestados · 1,848 cargados · 1,451 condenados en UK. El correo de Jean James al FBI incluía esta documentación como parte del contexto de "conexiones transatlánticas".</div>
+          </div>
+          <div class="doc-card">
+            <div class="dc-title">Página 32-33 de 42 — Extracto sobre Gordon Brown</div>
+            <div class="dc-date">Fuente: THE SEX COLLECTORS — How the World is run on Shame, Vol. III</div>
+            <div class="dc-text" style="font-size:11px;color:var(--muted2);line-height:1.7">El documento citado por Jean James incluye extractos de un libro sobre Norman Lamont (ex-Chancellor del Tesoro UK) que habría revelado en una fiesta privada en 1986 que Gordon Brown era un pedófilo cuyas actividades eran conocidas por servicios de inteligencia británicos, americanos e israelíes. <strong>Estas son acusaciones del libro citado — no hechos verificados independientemente.</strong></div>
+          </div>
+          <div class="doc-card">
+            <div class="dc-title">Paedophiles protected by British intelligence services (extracto)</div>
+            <div class="dc-date">Nov 5, 2012 · blog: Lord Cullen, Dunblane</div>
+            <div class="dc-text" style="font-size:11px;color:var(--muted2);line-height:1.7">El correo de Jean James incluye un post de 2012 sobre Lord Cullen — que "físicamente acompañó a Thomas Hamilton" (perpetrador de la masacre de Dunblane, 1996, donde 16 niños fueron asesinados) y es descrito como "cómplice de la masacre". Acusa a la inteligencia británica de proteger redes de pedofilia de élite. <strong>⚠️ Contenido no verificado del documento citado.</strong></div>
+          </div>
+          <div class="doc-card">
+            <div class="dc-title">Timing: 28 días antes de la muerte de Epstein</div>
+            <div class="dc-date">Jul 12, 2019 → Aug 10, 2019</div>
+            <div class="dc-text" style="font-size:11px;color:var(--muted2);line-height:1.7">Jean James envió este email al FBI el 12 julio 2019. Epstein fue arrestado el 6 julio 2019 (6 días antes de este correo). Epstein murió el 10 agosto 2019. El email tiene ⭐121 estrellas — el más marcado de todos los correos relacionados con esta investigación, posiblemente porque muchas personas en la red consideraron el timing y contenido altamente relevante.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACORDEÓN 3: RUDOLPH TANZI EN JMAIL -->
+    <div class="acc-section">
+      <div class="acc-header" onclick="toggleAcc(this)" style="border-color:rgba(200,100,200,0.4)">
+        <div class="acc-icon">🧠</div>
+        <div class="acc-title">
+          <h3 style="color:#e879f9">Rudolph Tanzi — 16 correos en jmail.world</h3>
+          <div class="acc-sub">Neurocientífico Harvard · Co-autor con Deepak Chopra · "Harvard scientist for Epstein" · Alzheimer gene discovery</div>
+        </div>
+        <span class="acc-badge" style="background:rgba(200,100,200,0.2);color:#e879f9;border:1px solid #d946ef">16 CORREOS</span>
+        <span class="acc-arrow">▼</span>
+      </div>
+      <div class="acc-body">
+        <div class="email-raw" style="color:#e879f9;border-color:#d946ef">
+          <div class="raw-from">De: Deepak Chopra → Epstein · Mar 22, 2017 · ⭐13 estrellas · 2 comentarios · Asunto: "Fwd: HMS-Today's News (March 22, 2017)"</div>
+          <div class="raw-body">"WOW!!! — **Dr. Rude Tanzi** [Rudolph Tanzi]" — Chopra reenvía a Epstein con exclamaciones un artículo de Harvard Medical School en el que Tanzi es protagonista.</div>
+        </div>
+        <div class="email-raw" style="color:#e879f9;border-color:#d946ef;margin-top:12px">
+          <div class="raw-from">De: [REDACTED] → [REDACTED] · Sep 9, 2018 · ⭐8 estrellas · Asunto: "(no subject)"</div>
+          <div class="raw-body">"neuroscientist <strong>Rudolph Tanzi</strong> suggests it might be a..." — correo redactado donde Tanzi es citado con referencia a una investigación científica específica (texto completado redactado). 9 personas con acceso a la cadena.</div>
+        </div>
+        <div class="analysis-box" style="margin-top:12px">
+          <div class="analysis-title">🔍 Red Tanzi-Chopra-Epstein</div>
+          <p style="font-size:12px;color:var(--muted2);line-height:1.8;margin:0 0 8px">Rudolph Tanzi aparece en 16 correos de jmail.world, todos dentro del círculo Chopra-Epstein. Tanzi y Chopra publicaron juntos <em>"Super Brain"</em> (2012) y <em>"Super Genes"</em> (2015). El correo de adrenochrome lo identifica explícitamente como <strong>"Harvard scientist for Epstein"</strong>.</p>
+          <p style="font-size:12px;color:var(--muted2);line-height:1.8;margin:0">En la red científica de Epstein: Chopra actúa como hub entre Tanzi, Epstein, y la investigación de consciencia cuántica. Tanzi era experto en neurología molecular — área de interés directo para los proyectos de mejora cognitiva y consciencia que Epstein financiaba.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACORDEÓN 4: BÚSQUEDAS RELACIONADAS -->
+    <div class="acc-section">
+      <div class="acc-header" onclick="toggleAcc(this)" style="border-color:rgba(150,150,150,0.4)">
+        <div class="acc-icon">🔎</div>
+        <div class="acc-title">
+          <h3 style="color:#aaa">Búsquedas Realizadas en jmail.world — Resultados Completos</h3>
+          <div class="acc-sub">Registro de todas las queries ejecutadas en tiempo real · Lo que existe y lo que NO existe en el archivo</div>
+        </div>
+        <span class="acc-badge" style="background:rgba(150,150,150,0.15);color:#aaa;border:1px solid #666">TRANSPARENCIA</span>
+        <span class="acc-arrow">▼</span>
+      </div>
+      <div class="acc-body">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="doc-card" style="border-color:rgba(255,50,50,0.3)">
+            <div class="dc-title" style="color:#ff6644">🔴 "adrenochrome" → 1 resultado</div>
+            <div class="dc-text" style="font-size:11px;color:var(--muted2);line-height:1.7">Un único correo directo: EFTA00165018. Dec 29, 2020. ⭐67. [REDACTED] → [REDACTED]. Contenido: capturas de pantalla de terceros con afirmaciones no verificadas. La palabra "adrenochrome" aparece 1 vez en 1,038,603 correos.</div>
+          </div>
+          <div class="doc-card" style="border-color:rgba(255,50,50,0.3)">
+            <div class="dc-title" style="color:#ff6644">🔴 "satanic ritual" → 2 resultados</div>
+            <div class="dc-text" style="font-size:11px;color:var(--muted2);line-height:1.7">Resultado 1: El mismo EFTA00165018 (adrenochrome). Resultado 2: Jean James → FBI (EFTA00103831), ⭐121 estrellas, sobre conexiones transatlánticas de pedofilia. Julio 12, 2019.</div>
+          </div>
+          <div class="doc-card" style="border-color:rgba(255,150,50,0.3)">
+            <div class="dc-title" style="color:#ff9944">🟠 "underground temple island" → 2 resultados</div>
+            <div class="dc-text" style="font-size:11px;color:var(--muted2);line-height:1.7">Resultado 1: EFTA00165018 (adrenochrome/capturas). Resultado 2: ASW Travel Deals (newsletter de viajes: Barcelona, París, NY, Miami, Antártida) — Oct 26, 2011. Sin relación con el tema.</div>
+          </div>
+          <div class="doc-card" style="border-color:rgba(255,150,50,0.3)">
+            <div class="dc-title" style="color:#ff9944">🟠 "harvesting organs" → 1 resultado</div>
+            <div class="dc-text" style="font-size:11px;color:var(--muted2);line-height:1.7">Únicamente el correo EFTA00165018. No hay otros correos sobre cosecha de órganos en el archivo.</div>
+          </div>
+          <div class="doc-card" style="border-color:rgba(100,200,100,0.3)">
+            <div class="dc-title" style="color:#4ade80">🟢 "Rudolph Tanzi Harvard" → 16 resultados</div>
+            <div class="dc-text" style="font-size:11px;color:var(--muted2);line-height:1.7">16 correos con Tanzi, principalmente del círculo Chopra-Epstein. Deepak Chopra reenvía a Epstein artículos de HMS con exclamaciones ("WOW!!!"). Tanzi aparece como referencia científica de Harvard en el entorno de Epstein.</div>
+          </div>
+          <div class="doc-card" style="border-color:rgba(100,200,100,0.3)">
+            <div class="dc-title" style="color:#4ade80">🟢 "ritual blood" → 11 resultados</div>
+            <div class="dc-text" style="font-size:11px;color:var(--muted2);line-height:1.7">Resultados: EFTA00165018 (⭐67), newsletters de HDtracks (música), Carolyn Rangel "Weekly Update" (meditación/rituales de bienestar), Houzz (cocinas), Gregory Brown (lecturas semanales). La mayoría de resultados son por "ritual" en contexto de mindfulness.</div>
+          </div>
+          <div class="doc-card" style="border-color:rgba(100,150,255,0.3)">
+            <div class="dc-title" style="color:#93c5fd">⚫ "adrenaline gland" → 0 resultados</div>
+            <div class="dc-text" style="font-size:11px;color:var(--muted2);line-height:1.7">Sin resultados. La variante anatómica no aparece en el archivo.</div>
+          </div>
+          <div class="doc-card" style="border-color:rgba(100,150,255,0.3)">
+            <div class="dc-title" style="color:#93c5fd">⚫ "Ismaili sacrifice" → 0 resultados</div>
+            <div class="dc-text" style="font-size:11px;color:var(--muted2);line-height:1.7">Sin resultados. La mención de "Ismaili" solo aparece en las capturas de pantalla del EFTA00165018, y uno de los participantes en esa conversación dice que lo escribió "al azar".</div>
+          </div>
+        </div>
+
+        <div class="analysis-box" style="margin-top:14px">
+          <div class="analysis-title">📊 Conclusión de la búsqueda</div>
+          <p style="font-size:12px;color:var(--muted2);line-height:1.8;margin:0">En 1,038,603 correos, la palabra "adrenochrome" aparece <strong>exactamente una vez</strong> (EFTA00165018), en un correo de un tercero no identificado que adjunta capturas de pantalla de conversaciones de Twitter de otros terceros también no identificados. No existe ningún correo de Epstein ni de su círculo inmediato mencionando adrenocromo, rituales de cosecha, o temas similares. El correo más cercano al tema de rituales y élite es el de Jean James → FBI (⭐121) del 12 julio 2019, que cita fuentes periodísticas de investigación sobre redes de pedofilia transatlántica.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
 </main>
 
 <script>
@@ -2709,24 +3045,21 @@ const titles = {
   'topics': '🏷️ Taxonomía de Temas',
   'arrests': '🚔 Arrestos, Dimisiones y Consecuencias',
   'classified': '🔐 Info Clasificada — Correos Reales de jmail.world',
-  'techflow': '🔬 Red Tecnológica Epstein — Diagrama de Flujo'
+  'techflow': '🔬 Red Tecnológica Epstein — Diagrama de Flujo',
+  'adreno': '🩸 Adrenocromo & Rituales — Correos de jmail.world (EFTA)'
 };
 
 function goto(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  
   const page = document.getElementById('page-' + id);
   if (page) page.classList.add('active');
-  
   document.querySelectorAll('.nav-item').forEach(n => {
     const oc = n.getAttribute('onclick') || '';
     if (oc.includes("'" + id + "'")) n.classList.add('active');
   });
-  
   const titleEl = document.getElementById('page-title');
   if (titleEl && titles[id]) titleEl.textContent = titles[id];
-  
   window.scrollTo(0, 0);
 }
 
@@ -2736,7 +3069,22 @@ function toggleAcc(header) {
   if (body) body.classList.toggle('open');
 }
 
+function toggleNav() {
+  const nav = document.querySelector('nav');
+  if (nav) nav.classList.toggle('nav-hidden');
+}
+
+function checkMobile() {
+  const btn = document.getElementById('navToggle');
+  if (btn) btn.style.display = window.innerWidth <= 768 ? 'flex' : 'none';
+  // Reset nav visibility on desktop
+  const nav = document.querySelector('nav');
+  if (nav && window.innerWidth > 768) nav.classList.remove('nav-hidden');
+}
+
+window.addEventListener('resize', checkMobile);
 window.addEventListener('load', () => {
+  checkMobile();
   goto('emails-critical');
 });
 </script>
