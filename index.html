@@ -1,0 +1,2744 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JMAIL ETL — Archivos Epstein 2026</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=Syne:wght@400;700;800&family=Inter:wght@300;400;500;600&display=swap');
+
+:root {
+  --bg: #050508;
+  --surface: #0d0d14;
+  --surface2: #13131f;
+  --border: #1a1a2e;
+  --border2: #252540;
+  --accent: #ff3a3a;
+  --accent-dim: rgba(255,58,58,0.12);
+  --gold: #f5a623;
+  --gold-dim: rgba(245,166,35,0.12);
+  --teal: #00d4b4;
+  --teal-dim: rgba(0,212,180,0.1);
+  --blue: #3b82f6;
+  --blue-dim: rgba(59,130,246,0.1);
+  --purple: #a855f7;
+  --purple-dim: rgba(168,85,247,0.1);
+  --text: #e2e2f0;
+  --muted: #5a5a78;
+  --muted2: #8080a0;
+  --e: #ff3a3a;
+  --t: #f5a623;
+  --l: #00d4b4;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  display: flex;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ═══ SIDEBAR ═══ */
+.sidebar {
+  width: 260px;
+  min-width: 260px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  z-index: 100;
+  overflow-y: auto;
+}
+
+.sidebar-logo {
+  padding: 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.sidebar-logo h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--gold) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.sidebar-logo p {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  color: var(--muted);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+.nav-section {
+  padding: 16px 0 8px;
+}
+
+.nav-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--muted);
+  padding: 0 20px 8px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 20px;
+  cursor: pointer;
+  transition: background 0.15s;
+  font-size: 13px;
+  color: var(--muted2);
+  border-left: 3px solid transparent;
+  user-select: none;
+}
+
+.nav-item:hover { background: rgba(255,255,255,0.04); color: var(--text); }
+
+.nav-item.active {
+  background: rgba(255,58,58,0.08);
+  color: var(--text);
+  border-left-color: var(--accent);
+}
+
+.nav-icon {
+  width: 16px;
+  text-align: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.nav-badge {
+  margin-left: auto;
+  background: var(--accent);
+  color: white;
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+.nav-badge.gold { background: var(--gold); }
+.nav-badge.teal { background: var(--teal); color: #000; }
+.nav-badge.blue { background: var(--blue); }
+.nav-badge.purple { background: var(--purple); }
+
+.sidebar-stats {
+  margin-top: auto;
+  padding: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  font-size: 11px;
+}
+
+.stat-item .k { color: var(--muted); font-family: 'IBM Plex Mono', monospace; }
+.stat-item .v { color: var(--gold); font-family: 'IBM Plex Mono', monospace; font-weight: 600; }
+
+/* ═══ MAIN ═══ */
+.main {
+  margin-left: 260px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ═══ TOPBAR ═══ */
+.topbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.topbar-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.topbar-pills {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pill {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-family: 'IBM Plex Mono', monospace;
+  border: 1px solid;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.pill.active, .pill:hover { opacity: 1; }
+.pill:not(.active) { opacity: 0.5; }
+.pill.r { border-color: var(--accent); color: var(--accent); }
+.pill.r.active { background: var(--accent-dim); }
+.pill.g { border-color: var(--gold); color: var(--gold); }
+.pill.g.active { background: var(--gold-dim); }
+.pill.t { border-color: var(--teal); color: var(--teal); }
+.pill.t.active { background: var(--teal-dim); }
+.pill.p { border-color: var(--purple); color: var(--purple); }
+.pill.p.active { background: var(--purple-dim); }
+
+/* ═══ CONTENT PAGES ═══ */
+.page { display: none; padding: 28px; animation: fadein 0.3s ease; }
+.page.active { display: block; }
+
+@keyframes fadein { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* ═══ SECTION HEADER ═══ */
+.sh {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 16px;
+}
+
+.sh h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: 26px;
+  font-weight: 800;
+}
+
+.sh .sub {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* ═══ ETL PIPELINE ═══ */
+.etl-grid {
+  display: grid;
+  grid-template-columns: 1fr 40px 1fr 40px 1fr;
+  gap: 0;
+  margin-bottom: 40px;
+}
+
+.etl-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 50px;
+  color: var(--muted);
+  font-size: 20px;
+}
+
+.etl-phase {
+  background: var(--surface);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.etl-header {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+}
+
+.etl-tag {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+
+.etl-title { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; }
+
+.etl-body { padding: 16px 18px; }
+
+.kv { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 12px; }
+.kv:last-child { border-bottom: none; }
+.kv .k { color: var(--muted2); font-family: 'IBM Plex Mono', monospace; font-size: 11px; }
+.kv .v { font-weight: 500; font-size: 11px; }
+
+.tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+.tag {
+  padding: 3px 9px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-family: 'IBM Plex Mono', monospace;
+  border: 1px solid;
+}
+
+.tag.e { border-color: var(--e); color: var(--e); }
+.tag.t { border-color: var(--t); color: var(--t); }
+.tag.l { border-color: var(--l); color: var(--l); }
+.tag.n { border-color: var(--border2); color: var(--muted2); }
+
+.mini-h { font-size: 9px; font-family: 'IBM Plex Mono', monospace; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); margin: 14px 0 8px; padding-bottom: 5px; border-bottom: 1px solid var(--border); }
+
+/* ═══ FLOW STEPS ═══ */
+.flow-row {
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  margin-bottom: 40px;
+}
+
+.flow-step {
+  flex: 1;
+  min-width: 140px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.fstep-box {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px;
+  position: relative;
+  overflow: hidden;
+}
+
+.fstep-n {
+  font-family: 'Syne', sans-serif;
+  font-size: 42px;
+  font-weight: 800;
+  opacity: 0.06;
+  position: absolute;
+  bottom: -4px;
+  right: 8px;
+  line-height: 1;
+}
+
+.fstep-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.fstep-desc {
+  font-size: 10px;
+  color: var(--muted2);
+  font-family: 'IBM Plex Mono', monospace;
+  line-height: 1.5;
+}
+
+.fstep-arrow {
+  display: flex;
+  align-items: center;
+  padding: 0 4px;
+  color: var(--muted);
+  font-size: 16px;
+  margin-top: 20px;
+}
+
+/* ═══ SCHEMA TABLE ═══ */
+.stbl {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  font-family: 'IBM Plex Mono', monospace;
+  margin-bottom: 40px;
+}
+
+.stbl th {
+  text-align: left;
+  padding: 9px 14px;
+  background: rgba(255,255,255,0.03);
+  color: var(--muted);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  border-bottom: 1px solid var(--border);
+}
+
+.stbl td {
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.stbl tr:hover td { background: rgba(255,255,255,0.02); }
+.stbl td:first-child { color: var(--gold); }
+.stbl td:nth-child(2) { color: var(--blue); font-size: 10px; }
+.stbl td:nth-child(3) { color: var(--muted2); font-size: 11px; }
+
+/* ═══ EMAIL CARDS ═══ */
+.email-grid { display: flex; flex-direction: column; gap: 16px; }
+
+.email-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: border-color 0.2s, transform 0.15s;
+  cursor: pointer;
+}
+
+.email-card:hover {
+  border-color: var(--border2);
+  transform: translateY(-2px);
+}
+
+.email-card.critical { border-left: 3px solid var(--accent); }
+.email-card.high { border-left: 3px solid var(--gold); }
+.email-card.medium { border-left: 3px solid var(--teal); }
+
+.email-header {
+  padding: 14px 18px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  border-bottom: 1px solid var(--border);
+}
+
+.severity-badge {
+  flex-shrink: 0;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 9px;
+  font-family: 'IBM Plex Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.sev-critical { background: var(--accent-dim); color: var(--accent); border: 1px solid var(--accent); }
+.sev-high { background: var(--gold-dim); color: var(--gold); border: 1px solid var(--gold); }
+.sev-medium { background: var(--teal-dim); color: var(--teal); border: 1px solid var(--teal); }
+.sev-classified { background: var(--purple-dim); color: var(--purple); border: 1px solid var(--purple); }
+
+.email-meta { flex: 1; }
+
+.email-subject {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.email-from {
+  font-size: 11px;
+  color: var(--muted2);
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+.email-date {
+  font-size: 10px;
+  color: var(--muted);
+  margin-left: auto;
+  flex-shrink: 0;
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+.email-body {
+  padding: 16px 18px;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--muted2);
+}
+
+.email-body strong { color: var(--text); }
+
+.email-quote {
+  background: rgba(255,255,255,0.04);
+  border-left: 3px solid var(--border2);
+  padding: 10px 14px;
+  margin: 10px 0;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--muted2);
+  line-height: 1.6;
+  border-radius: 0 4px 4px 0;
+  font-style: italic;
+}
+
+.email-tags { padding: 10px 18px 14px; display: flex; gap: 6px; flex-wrap: wrap; }
+
+.email-impact {
+  padding: 10px 18px;
+  background: rgba(255,58,58,0.06);
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--muted2);
+}
+
+.email-impact strong { color: var(--accent); }
+
+/* ═══ PEOPLE GRID ═══ */
+.people-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.person-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px;
+  cursor: pointer;
+  transition: border-color 0.2s, transform 0.2s;
+  position: relative;
+}
+
+.person-card:hover { border-color: var(--border2); transform: translateX(3px); }
+
+.person-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  border-radius: 8px 0 0 8px;
+}
+
+.pc-politics::before { background: var(--accent); }
+.pc-tech::before { background: var(--blue); }
+.pc-academia::before { background: var(--teal); }
+.pc-finance::before { background: var(--gold); }
+.pc-inner::before { background: var(--purple); }
+.pc-media::before { background: #a855f7; }
+
+.person-name { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
+.person-role { font-size: 10px; color: var(--muted); font-family: 'IBM Plex Mono', monospace; }
+
+.person-cat {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 9px;
+  padding: 2px 7px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+.pcat-politics { background: var(--accent-dim); color: var(--accent); }
+.pcat-tech { background: var(--blue-dim); color: var(--blue); }
+.pcat-academia { background: var(--teal-dim); color: var(--teal); }
+.pcat-finance { background: var(--gold-dim); color: var(--gold); }
+.pcat-inner { background: var(--purple-dim); color: var(--purple); }
+.pcat-media { background: rgba(168,85,247,0.1); color: #a855f7; }
+
+/* ═══ TOPICS ═══ */
+.topic-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+  margin-bottom: 32px;
+}
+
+.topic-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px;
+  transition: transform 0.2s;
+}
+
+.topic-card:hover { transform: translateY(-3px); }
+
+.topic-icon { font-size: 26px; margin-bottom: 10px; }
+.topic-name { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+.topic-desc { font-size: 11px; color: var(--muted2); line-height: 1.6; }
+
+/* ═══ TIMELINE ═══ */
+.timeline { position: relative; padding-left: 24px; margin-bottom: 32px; }
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 8px; top: 0; bottom: 0;
+  width: 1px;
+  background: var(--border2);
+}
+
+.tl-item {
+  position: relative;
+  margin-bottom: 24px;
+}
+
+.tl-item::before {
+  content: '';
+  position: absolute;
+  left: -20px;
+  top: 6px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--bg);
+}
+
+.tl-item.gold::before { background: var(--gold); }
+.tl-item.teal::before { background: var(--teal); }
+.tl-item.blue::before { background: var(--blue); }
+
+.tl-date {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+
+.tl-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+.tl-desc { font-size: 12px; color: var(--muted2); line-height: 1.6; }
+
+/* ═══ INFO BOXES ═══ */
+.info-box {
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  border: 1px solid;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.info-box.warn { background: var(--accent-dim); border-color: rgba(255,58,58,0.3); color: var(--text); }
+.info-box.note { background: var(--gold-dim); border-color: rgba(245,166,35,0.3); color: var(--text); }
+.info-box.info { background: var(--blue-dim); border-color: rgba(59,130,246,0.3); color: var(--text); }
+.info-box.secret { background: var(--purple-dim); border-color: rgba(168,85,247,0.3); color: var(--text); }
+
+.info-box .label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 6px;
+  opacity: 0.7;
+}
+
+/* ═══ GRID 2 COL ═══ */
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+
+/* ═══ CARD ═══ */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px;
+}
+
+.card h3 { font-size: 14px; font-weight: 600; margin-bottom: 10px; }
+
+/* ═══ UFO / ALIENS page ═══ */
+.ufo-banner {
+  background: linear-gradient(135deg, rgba(168,85,247,0.1) 0%, rgba(59,130,246,0.1) 100%);
+  border: 1px solid rgba(168,85,247,0.3);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 28px;
+  text-align: center;
+}
+
+.ufo-banner h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--purple), var(--blue));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 8px;
+}
+
+.ufo-banner p { color: var(--muted2); font-size: 13px; line-height: 1.6; }
+
+/* ═══ PHOTO GRID ═══ */
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 10px;
+  margin-bottom: 32px;
+}
+
+.photo-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 0.2s;
+}
+
+.photo-card:hover { transform: scale(1.02); }
+
+.photo-placeholder {
+  width: 100%;
+  aspect-ratio: 4/3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  background: linear-gradient(135deg, var(--surface), var(--surface2));
+  border-bottom: 1px solid var(--border);
+}
+
+.photo-caption {
+  padding: 8px 10px;
+  font-size: 10px;
+  color: var(--muted2);
+  font-family: 'IBM Plex Mono', monospace;
+  line-height: 1.4;
+}
+
+/* ═══ RESPONSIVE ═══ */
+@media (max-width: 900px) {
+  .sidebar { width: 200px; min-width: 200px; }
+  .main { margin-left: 200px; }
+  .etl-grid { grid-template-columns: 1fr; }
+  .etl-arrow { display: none; }
+  .g2 { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ SIDEBAR ═══ -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <h1>JMAIL ETL</h1>
+    <p>Archivos Epstein · 2026</p>
+  </div>
+
+  <nav>
+
+
+    <div class="nav-section">
+      <div class="nav-label">Correos Clasificados</div>
+      <div class="nav-item active" onclick="goto('emails-critical')">
+        <span class="nav-icon">🔴</span> Críticos / Secretos
+        <span class="nav-badge">12</span>
+      </div>
+      <div class="nav-item" onclick="goto('emails-uk')">
+        <span class="nav-icon">🇬🇧</span> UK Gov / Mandelson
+        <span class="nav-badge gold">8</span>
+      </div>
+      <div class="nav-item" onclick="goto('emails-tech')">
+        <span class="nav-icon">💻</span> Tech: Musk / Gates
+        <span class="nav-badge">6</span>
+      </div>
+      <div class="nav-item" onclick="goto('emails-science')">
+        <span class="nav-icon">🔬</span> Red Científica
+        <span class="nav-badge teal">9</span>
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Investigaciones</div>
+      <div class="nav-item" onclick="goto('ufo')">
+        <span class="nav-icon">👽</span> UFOs & Telepathy
+        <span class="nav-badge purple">⭐70</span>
+      </div>
+      <div class="nav-item" onclick="goto('network')">
+        <span class="nav-icon">🕸️</span> Red de Contactos
+        <span class="nav-badge">44+</span>
+      </div>
+      <div class="nav-item" onclick="goto('timeline')">
+        <span class="nav-icon">📅</span> Timeline 2025–2026
+      </div>
+      <div class="nav-item" onclick="goto('topics')">
+        <span class="nav-icon">🏷️</span> Taxonomía de Temas
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Consecuencias</div>
+      <div class="nav-item" onclick="goto('arrests')">
+        <span class="nav-icon">🚔</span> Arrestos & Dimisiones
+        <span class="nav-badge">7</span>
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label" style="color:#ff4060">🔐 CLASIFICADO REAL</div>
+      <div class="nav-item" onclick="goto('classified')" style="border-left:2px solid #ff0040;position:relative">
+        <span class="nav-icon">🔐</span> Info Clasificada — jmail.world
+        <span style="position:absolute;top:4px;right:6px;background:#ff0040;color:#fff;font-size:8px;padding:1px 5px;border-radius:3px;font-weight:800">REAL</span>
+      </div>
+      <div class="nav-item" onclick="goto('techflow')" style="border-left:2px solid #00d4b4;position:relative">
+        <span class="nav-icon">🔬</span> Tecnología — Diagrama Flujo
+        <span style="position:absolute;top:4px;right:6px;background:#00d4b4;color:#000;font-size:8px;padding:1px 5px;border-radius:3px;font-weight:800">NEW</span>
+        <span class="nav-badge" style="background:var(--teal);color:#000">NEW</span>
+      </div>
+    </div>
+  </nav>
+
+  <div class="sidebar-stats">
+    <div class="nav-label" style="padding: 0 0 8px">Volumen</div>
+    <div class="stat-item"><span class="k">Correos</span><span class="v">1,038,603</span></div>
+    <div class="stat-item"><span class="k">Documentos</span><span class="v">1.4M+</span></div>
+    <div class="stat-item"><span class="k">Páginas</span><span class="v">2.47M</span></div>
+    <div class="stat-item"><span class="k">Videos</span><span class="v">2,000+</span></div>
+    <div class="stat-item"><span class="k">Imágenes</span><span class="v">180,000+</span></div>
+  </div>
+</aside>
+
+<!-- ═══ MAIN ═══ -->
+<main class="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <span class="topbar-title" id="page-title">🔴 Correos Críticos / Secretos de Estado</span>
+    <div class="topbar-pills">
+      <span class="pill r active">Extract</span>
+      <span class="pill g active">Transform</span>
+      <span class="pill t active">Load</span>
+      <span class="pill p active">Classified</span>
+    </div>
+  </div>
+
+  <!-- ═══ PAGE: EMAILS CRITICAL ═══ -->
+  <div class="page active" id="page-emails-critical">
+    <div class="sh">
+      <h2>🔴 Correos Críticos / Secretos de Estado</h2>
+      <span class="sub">// Comunicaciones más explosivas reveladas en los archivos</span>
+    </div>
+
+    <div class="info-box warn">
+      <div class="label">🔴 Clasificado</div>
+      Los siguientes correos son <strong>reales y de dominio público</strong>, liberados por el DOJ bajo la EFTA. Ninguna mención en los archivos constituye automáticamente prueba de delito; todos los citados niegan irregularidades salvo condenas ya existentes.
+    </div>
+
+    <div class="email-grid">
+
+      <!-- EMAIL 1 -->
+      <div class="email-card critical">
+        <div class="email-header">
+          <span class="severity-badge sev-critical">CRÍTICO</span>
+          <div class="email-meta">
+            <div class="email-subject">📋 Nota confidencial al PM Gordon Brown — Activos vendibles del gobierno</div>
+            <div class="email-from">De: Peter Mandelson → Para: Jeffrey Epstein</div>
+          </div>
+          <span class="email-date">Jun 2009</span>
+        </div>
+        <div class="email-body">
+          <p>Mandelson, entonces <strong>Secretario de Estado de Negocios del Reino Unido</strong>, reenvió a Epstein un memorando confidencial escrito por un asesor económico de Gordon Brown. El memo discutía cómo el gobierno podría recaudar fondos durante la crisis financiera de 2008, incluyendo <strong>venta de activos gubernamentales no estratégicos por hasta £20 billones</strong>.</p>
+          <div class="email-quote">
+            "Interesting note that's gone to the PM." — Mandelson a Epstein, adjuntando el memorando interno
+          </div>
+          <p>Cuando Epstein preguntó sobre los "activos vendibles", Mandelson respondió: <em>"land, property I guess"</em>. Esta información era sensible al mercado — potencialmente usable para operaciones financieras anticipadas.</p>
+        </div>
+        <div class="email-tags">
+          <span class="tag e">Secreto de Estado</span>
+          <span class="tag t">Información de mercado</span>
+          <span class="tag n">Gordon Brown</span>
+          <span class="tag n">Crisis 2008</span>
+        </div>
+        <div class="email-impact">
+          <strong>⚡ Impacto real:</strong> Mandelson arrestado 23 Feb 2026. Investigación policial activa. Se investiga "misconduct in public office" — pena de hasta 10 años en UK.
+        </div>
+      </div>
+
+      <!-- EMAIL 2 -->
+      <div class="email-card critical">
+        <div class="email-header">
+          <span class="severity-badge sev-critical">CRÍTICO</span>
+          <div class="email-meta">
+            <div class="email-subject">🏦 Rescate de €500 billones de la Eurozona — anticipo a Epstein</div>
+            <div class="email-from">De: Mandelson (aparente) → Para: Epstein</div>
+          </div>
+          <span class="email-date">May 2010</span>
+        </div>
+        <div class="email-body">
+          <p>Horas antes del anuncio oficial de la Unión Europea de un <strong>fondo de rescate de €500 billones</strong> para estabilizar el Euro durante la crisis griega, aparece un email que parece ser de Mandelson diciendo:</p>
+          <div class="email-quote">
+            "Sd [sic] be announced tonight" — seguido de "I'll call you after I leave 10 Downing Street"
+          </div>
+          <p>Este dato era de enorme sensibilidad financiera — cualquiera con acceso previo podría haber movido posiciones en mercados de bonos europeos antes del anuncio público.</p>
+        </div>
+        <div class="email-tags">
+          <span class="tag e">Info pre-mercado</span>
+          <span class="tag t">Eurozona</span>
+          <span class="tag n">Crisis griega</span>
+        </div>
+        <div class="email-impact">
+          <strong>⚡ Impacto real:</strong> Gordon Brown furioso, colabora activamente con Scotland Yard. Epstein poseía contactos en fondos de inversión que podían actuar sobre esta información.
+        </div>
+      </div>
+
+      <!-- EMAIL 3 -->
+      <div class="email-card critical">
+        <div class="email-header">
+          <span class="severity-badge sev-critical">CRÍTICO</span>
+          <div class="email-meta">
+            <div class="email-subject">📱 Seudónimo secreto del PM Brown + email seguro filtrado</div>
+            <div class="email-from">De: dirección redactada → Para: Epstein</div>
+          </div>
+          <span class="email-date">Ago 2009</span>
+        </div>
+        <div class="email-body">
+          <p>Un email enviado a Epstein desde una dirección redactada <strong>revela el seudónimo utilizado por el Primer Ministro Gordon Brown</strong> para comunicaciones seguras: <strong>"John Pond"</strong>, junto con su dirección de email seguro gubernamental.</p>
+          <p>Esta información permitía contactar directamente y de forma no oficial al PM de un gobierno del G7 en plena crisis financiera global.</p>
+        </div>
+        <div class="email-tags">
+          <span class="tag e">Top Secret</span>
+          <span class="tag t">Identidad PM</span>
+          <span class="tag n">Seguridad UK</span>
+        </div>
+        <div class="email-impact">
+          <strong>⚡ Impacto real:</strong> Revisión de protocolos de seguridad del gobierno. El Cabinet Secretary inició revisión de archivos gubernamentales del período 2008-2010.
+        </div>
+      </div>
+
+      <!-- EMAIL 4 -->
+      <div class="email-card critical">
+        <div class="email-header">
+          <span class="severity-badge sev-critical">CRÍTICO</span>
+          <div class="email-meta">
+            <div class="email-subject">💷 Lobby contra impuesto a bonos bancarios — coordinación con Epstein</div>
+            <div class="email-from">De: Mandelson → Para: Epstein / banqueros</div>
+          </div>
+          <span class="email-date">Dic 2009</span>
+        </div>
+        <div class="email-body">
+          <p>En plena crisis financiera, Brown intentó gravar los bonos bancarios. Epstein pregunta a Mandelson si hay "alguna posibilidad real de que el impuesto solo aplique a la parte en efectivo del bono bancario". Mandelson responde:</p>
+          <div class="email-quote">
+            "Trying hard to amend... Treasury digging in but I am on case."
+          </div>
+          <p>Dos días después, Epstein emailed a Mandelson preguntando si un ejecutivo bancario debería llamar directamente al Canciller del Tesoro.</p>
+        </div>
+        <div class="email-tags">
+          <span class="tag e">Corrupción</span>
+          <span class="tag t">Lobby ilegal</span>
+          <span class="tag n">Banca</span>
+        </div>
+        <div class="email-impact">
+          <strong>⚡ Impacto real:</strong> Evidencia directa de un ministro del gabinete coordinando con un financiero criminal para influir en política tributaria.
+        </div>
+      </div>
+
+      <!-- EMAIL 5 -->
+      <div class="email-card critical">
+        <div class="email-header">
+          <span class="severity-badge sev-critical">CRÍTICO</span>
+          <div class="email-meta">
+            <div class="email-subject">👑 Prince Andrew invita a Epstein a Buckingham Palace</div>
+            <div class="email-from">De: Prince Andrew → Para: Jeffrey Epstein</div>
+          </div>
+          <span class="email-date">Sep 2010</span>
+        </div>
+        <div class="email-body">
+          <p>Tras la condena de Epstein por abuso sexual en 2008, el entonces Príncipe Andrew <strong>invita a Epstein a Buckingham Palace</strong> para una cena privada. Epstein había preguntado: "What time would you like me... we will also need... private time." Andrew respondió:</p>
+          <div class="email-quote">
+            "We could have dinner at Buckingham Palace and lots of privacy."
+          </div>
+          <p>Un mes antes, Epstein había propuesto presentarle a Andrew una mujer rusa de 26 años. Las fotos liberadas muestran a Andrew sobre una mujer no identificada en el suelo.</p>
+        </div>
+        <div class="email-tags">
+          <span class="tag e">Familia Real UK</span>
+          <span class="tag t">Post-condena</span>
+          <span class="tag n">Buckingham Palace</span>
+        </div>
+        <div class="email-impact">
+          <strong>⚡ Impacto real:</strong> Andrew Mountbatten-Windsor arrestado 19 Feb 2026 en UK por "misconduct in public office". Primera vez que un miembro de la familia real es detenido en investigación criminal.
+        </div>
+      </div>
+
+      <!-- EMAIL 6 -->
+      <div class="email-card high">
+        <div class="email-header">
+          <span class="severity-badge sev-high">ALTO</span>
+          <div class="email-meta">
+            <div class="email-subject">🚀 Elon Musk pregunta qué noche habrá la "fiesta más salvaje" en la isla</div>
+            <div class="email-from">De: Elon Musk → Para: Jeffrey Epstein</div>
+          </div>
+          <span class="email-date">2012</span>
+        </div>
+        <div class="email-body">
+          <p>Epstein contacta a Musk para coordinar una visita a su isla privada Little Saint James. Musk responde confirmando que asistiría solo con su entonces esposa Talulah Riley, y pregunta qué noche tendría la fiesta más activa:</p>
+          <div class="email-quote">
+            "What night would yield the 'wildest party'?"
+          </div>
+          <p>Esto contradice directamente la declaración pública de Musk de que <strong>"REFUSED"</strong> asistir a cualquier evento de Epstein. En 2014, una asistente de Epstein envió un recordatorio: <em>"Elon Musk to island Dec. 6th"</em>.</p>
+        </div>
+        <div class="email-tags">
+          <span class="tag t">Isla Little Saint James</span>
+          <span class="tag n">Contradicción pública</span>
+          <span class="tag n">Musk</span>
+        </div>
+        <div class="email-impact">
+          <strong>⚡ Impacto real:</strong> Musk y Reid Hoffman en guerra pública en X. Musk dice los correos "pueden malinterpretarse". Hoffman había estado presionando por la liberación de los archivos.
+        </div>
+      </div>
+
+      <!-- EMAIL 7 -->
+      <div class="email-card high">
+        <div class="email-header">
+          <span class="severity-badge sev-high">ALTO</span>
+          <div class="email-meta">
+            <div class="email-subject">💻 Bill Gates: draft misterioso sobre matrimonio, STD y negocios</div>
+            <div class="email-from">De: borrador en cuenta Epstein (autoría disputada)</div>
+          </div>
+          <span class="email-date">2013</span>
+        </div>
+        <div class="email-body">
+          <p>En la cuenta de Epstein se encontraron <strong>borradores de emails de 2013</strong> que documentan, en estilo de stream-of-consciousness, sentimientos de traición hacia Bill Gates. Los borradores mencionan:</p>
+          <div class="email-quote">
+            Discordia marital entre Bill y Melinda Gates, preocupación por una enfermedad de transmisión sexual, negocios fracasados, y que "un divorcio público perjudicaría a su fundación"
+          </div>
+          <p>Portavoz de Gates los calificó de "absolutamente absurdos y completamente falsos" y los atribuyó a "un mentiroso demostrado". Gates y Melinda se divorciaron en 2021, y la relación con Epstein fue factor en la separación.</p>
+        </div>
+        <div class="email-tags">
+          <span class="tag t">Chantaje potencial</span>
+          <span class="tag n">Gates Foundation</span>
+          <span class="tag n">Divorcio</span>
+        </div>
+        <div class="email-impact">
+          <strong>⚡ Impacto real:</strong> Refuerza teoría de que Epstein usaba información personal como leverage sobre sus contactos. Melinda Gates citó la relación con Epstein como razón del divorcio.
+        </div>
+      </div>
+
+      <!-- EMAIL 8 -->
+      <div class="email-card high">
+        <div class="email-header">
+          <span class="severity-badge sev-high">ALTO</span>
+          <div class="email-meta">
+            <div class="email-subject">🇷🇺 Epstein propone a Putin un "nuevo sistema financiero mundial"</div>
+            <div class="email-from">De: Epstein → Para: Thorbjørn Jagland (Ex-PM Noruega)</div>
+          </div>
+          <span class="email-date">May 2013</span>
+        </div>
+        <div class="email-body">
+          <p>Epstein contacta al ex Primer Ministro noruego y Secretario General del Consejo de Europa, <strong>Thorbjørn Jagland</strong>, para que transmita un mensaje a Putin. Le pide que le diga al presidente ruso que puede ayudarle a:</p>
+          <div class="email-quote">
+            "Leapfrog the global community by reinventing the financial system of the 21st century. A new form of money, on a worldwide basis."
+          </div>
+          <p>Jagland respondió que no era fácil explicárselo a Putin, pero ofreció decirle: "Tengo un amigo que puede ayudarte." Epstein instruyó a Jagland a decir que él y Putin son "close".</p>
+        </div>
+        <div class="email-tags">
+          <span class="tag e">Geopolítica</span>
+          <span class="tag t">Rusia</span>
+          <span class="tag n">Putin</span>
+          <span class="tag n">Crypto/Finanzas</span>
+        </div>
+        <div class="email-impact">
+          <strong>⚡ Impacto real:</strong> Policía noruega investiga a Jagland. Resignó como asesor de seguridad del primer ministro eslovaco tras revelarse sus comunicaciones. Demuestra que Epstein operaba como agente geopolítico informal.
+        </div>
+      </div>
+
+      <!-- EMAIL 9 -->
+      <div class="email-card high">
+        <div class="email-header">
+          <span class="severity-badge sev-high">ALTO</span>
+          <div class="email-meta">
+            <div class="email-subject">🔬 Steve Bannon y Epstein bromean sobre Trump "out of gas"</div>
+            <div class="email-from">De: Steve Bannon → Para: Jeffrey Epstein</div>
+          </div>
+          <span class="email-date">2018–2019</span>
+        </div>
+        <div class="email-body">
+          <p>Cientos de textos amistosos entre el estratega de Trump y Epstein, incluyendo discusiones sobre política, viajes, y un documental que Bannon planificaba para rehabilitar la imagen de Epstein. En referencia a un post de Axios sobre la agenda de Trump:</p>
+          <div class="email-quote">
+            "Brother is out of gas." — Bannon sobre Trump. También se refirió al presidente como "'Stable Genius' bringing himself down."
+          </div>
+          <p>En 2019 (meses antes del arresto de Epstein), Bannon le pidió su avión privado para recogerlo en Roma.</p>
+        </div>
+        <div class="email-tags">
+          <span class="tag t">Trump inner circle</span>
+          <span class="tag n">MAGA</span>
+          <span class="tag n">Política 2019</span>
+        </div>
+        <div class="email-impact">
+          <strong>⚡ Impacto real:</strong> Muestra profundidad de la conexión Epstein-Trump orbit. Bannon no respondió solicitudes de comentario.
+        </div>
+      </div>
+
+      <!-- EMAIL 10 -->
+      <div class="email-card high">
+        <div class="email-header">
+          <span class="severity-badge sev-classified">CLASSIFIED</span>
+          <div class="email-meta">
+            <div class="email-subject">🕵️ Investigación DEA encubierta de 5 años contra Epstein</div>
+            <div class="email-from">De: archivos DOJ internos</div>
+          </div>
+          <span class="email-date">~2010–2014</span>
+        </div>
+        <div class="email-body">
+          <p>Los archivos revelan una <strong>investigación de la DEA previamente desconocida</strong> que duró más de 5 años. Apuntaba a Epstein y <strong>14 otros individuos</strong> por transferencias de dinero sospechosas potencialmente vinculadas al narcotráfico ilegal.</p>
+          <p>Esta investigación era paralela y separada de las investigaciones por tráfico sexual. Nunca fue divulgada públicamente hasta la liberación de los archivos bajo la EFTA.</p>
+        </div>
+        <div class="email-tags">
+          <span class="tag e">DEA</span>
+          <span class="tag e">Narco</span>
+          <span class="tag t">Lavado dinero</span>
+          <span class="tag n">14 sospechosos</span>
+        </div>
+        <div class="email-impact">
+          <strong>⚡ Impacto real:</strong> Abre preguntas sobre por qué la DEA nunca procedió. ¿Protección de agencias inteligencia? ¿Acuerdo Plea Deal de 2008 bloqueó otras investigaciones?
+        </div>
+      </div>
+
+      <!-- EMAIL 11 -->
+      <div class="email-card high">
+        <div class="email-header">
+          <span class="severity-badge sev-high">ALTO</span>
+          <div class="email-meta">
+            <div class="email-subject">🏛️ Kathryn Ruemmler (exConsejera Casa Blanca): "lo adoro, es como un hermano"</div>
+            <div class="email-from">De: Kathryn Ruemmler → Para: destinatario redactado</div>
+          </div>
+          <span class="email-date">Dic 2015</span>
+        </div>
+        <div class="email-body">
+          <p>Kathryn Ruemmler, ex Consejera Jurídica de la Casa Blanca bajo Obama (2011-2014) y actualmente Directora Legal de Goldman Sachs, escribe sobre Epstein:</p>
+          <div class="email-quote">
+            "I adore him. It's like having another older brother!"
+          </div>
+          <p>El comentario fue hecho después de que Epstein se ofreció a comprarle un ticket de primera clase a Europa. En 2023, Ruemmler declaró al WSJ: "I regret ever knowing Jeffrey Epstein."</p>
+        </div>
+        <div class="email-tags">
+          <span class="tag t">Obama admin</span>
+          <span class="tag n">Goldman Sachs</span>
+          <span class="tag n">Post-condena 2015</span>
+        </div>
+        <div class="email-impact">
+          <strong>⚡ Impacto real:</strong> Email de 2015 — 7 años después de la condena de Epstein como abusador sexual — cuando supuestamente nadie del establishment debía aún relacionarse con él.
+        </div>
+      </div>
+
+      <!-- EMAIL 12 -->
+      <div class="email-card high">
+        <div class="email-header">
+          <span class="severity-badge sev-high">ALTO</span>
+          <div class="email-meta">
+            <div class="email-subject">💼 Mandelson rechaza oferta de trabajo de $4–10M/año tramitada por Epstein</div>
+            <div class="email-from">De: correspondencia Epstein / Jes Staley (Deutsche Bank)</div>
+          </div>
+          <span class="email-date">2010</span>
+        </div>
+        <div class="email-body">
+          <p>Dos días después del cambio de gobierno en UK (2010), Epstein escribe a Jes Staley discutiendo una potencial oferta laboral de <strong>Deutsche Bank de $4–10M/año</strong> para Mandelson. El CEO de Deutsche declaró querer contratar a Mandelson para "acceder a gobiernos, familias y corporaciones".</p>
+          <div class="email-quote">
+            "I must tell you, that after year of being by your side, supporting your boyfriend when he needed it... I am disappointed in what appears to be a one way street." — Epstein a Mandelson, refiriéndose a pagos de $75,000 a la pareja de Mandelson
+          </div>
+        </div>
+        <div class="email-tags">
+          <span class="tag e">Quid pro quo</span>
+          <span class="tag t">$75,000 pagos</span>
+          <span class="tag n">Deutsche Bank</span>
+        </div>
+        <div class="email-impact">
+          <strong>⚡ Impacto real:</strong> Establece patrón claro: secretos a cambio de oportunidades de trabajo multimillonarias. Mandelson también aparece fotografiado de compras en St. Barths con Epstein.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══ PAGE: EMAILS UK ═══ -->
+  <div class="page" id="page-emails-uk">
+    <div class="sh">
+      <h2>🇬🇧 UK Government / Mandelson</h2>
+      <span class="sub">// Escándalo que derrumbó un embajador y sacudió Downing Street</span>
+    </div>
+
+    <div class="info-box warn">
+      <div class="label">🚨 Estado actual: Feb 2026</div>
+      Peter Mandelson <strong>arrestado 23 Feb 2026</strong>. Prince Andrew (Mountbatten-Windsor) <strong>arrestado 19 Feb 2026</strong>. PM Keir Starmer bajo presión masiva. Dos asesores renunciaron. Gordon Brown colabora con Scotland Yard.
+    </div>
+
+    <div class="g2">
+      <div class="card">
+        <h3>🗓️ Cronología Mandelson–Epstein</h3>
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-date">2003</div>
+            <div class="tl-title">Libro de cumpleaños: "my best pal"</div>
+            <div class="tl-desc">Mandelson llama a Epstein su "mejor amigo". Epstein paga viajes de Mandelson.</div>
+          </div>
+          <div class="tl-item gold">
+            <div class="tl-date">2008</div>
+            <div class="tl-title">Post-condena: apoyo a Epstein</div>
+            <div class="tl-desc">Mandelson apoya a Epstein, le aconseja "luchar por su liberación anticipada" y dice que "piensa el mundo de él".</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-date">Jun 2009</div>
+            <div class="tl-title">Filtra memo confidencial sobre crisis</div>
+            <div class="tl-desc">Reenvía documento interno del PM sobre venta de activos del Estado valorados en £20bn.</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-date">Ago 2009</div>
+            <div class="tl-title">Revela seudónimo "John Pond" del PM</div>
+            <div class="tl-desc">Dirección de email seguro del PM Gordon Brown filtrada.</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-date">Dic 2009</div>
+            <div class="tl-title">Lobby contra impuesto banqueros</div>
+            <div class="tl-desc">"I am on case" — Mandelson intenta modificar impuesto a favor de banqueros aliados de Epstein.</div>
+          </div>
+          <div class="tl-item gold">
+            <div class="tl-date">May 2010</div>
+            <div class="tl-title">Filtra rescate €500bn y dimisión Brown</div>
+            <div class="tl-desc">Información antes de anuncios oficiales. Pagos de $75,000 a la pareja de Mandelson.</div>
+          </div>
+          <div class="tl-item teal">
+            <div class="tl-date">Sep 2025</div>
+            <div class="tl-title">Primer despido como embajador UK-USA</div>
+            <div class="tl-desc">Starmer lo despide tras revelaciones iniciales. Mandelson había mentido sobre la relación.</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-date">Feb 2026</div>
+            <div class="tl-title">Arrestado · Investigación criminal</div>
+            <div class="tl-desc">Metropolitan Police: detenido por "misconduct in public office". Liberado bajo fianza.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>💥 Consecuencias políticas UK</h3>
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-date">Sep 2025</div>
+            <div class="tl-title">Mandelson despedido como embajador</div>
+            <div class="tl-desc">Starmer dice que sus respuestas eran "inaceptables".</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-date">Feb 2026</div>
+            <div class="tl-title">Mandelson renuncia al Partido Laborista</div>
+            <div class="tl-desc">"No deseo causar más vergüenza al Partido Laborista."</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-date">Feb 2026</div>
+            <div class="tl-title">Renuncia Morgan McSweeney (jefe de Gabinete)</div>
+            <div class="tl-desc">Había recomendado a Mandelson para el cargo de embajador.</div>
+          </div>
+          <div class="tl-item gold">
+            <div class="tl-date">19 Feb 2026</div>
+            <div class="tl-title">Prince Andrew arrestado</div>
+            <div class="tl-desc">Sospecha de "misconduct in public office" relacionada con Epstein. 11 horas en custodia.</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-date">23 Feb 2026</div>
+            <div class="tl-title">Mandelson arrestado en Camden</div>
+            <div class="tl-desc">Policía registra dos propiedades (Wiltshire y Camden).</div>
+          </div>
+          <div class="tl-item teal">
+            <div class="tl-date">Mar 2026</div>
+            <div class="tl-title">Publicación documentos de vetting</div>
+            <div class="tl-desc">Gobierno promete transparencia sobre proceso de nombramiento.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ PAGE: EMAILS TECH ═══ -->
+  <div class="page" id="page-emails-tech">
+    <div class="sh">
+      <h2>💻 Red Tech: Musk, Gates y Silicon Valley</h2>
+      <span class="sub">// 20+ ejecutivos de tecnología en los archivos</span>
+    </div>
+
+    <div class="info-box note">
+      <div class="label">📌 Contexto</div>
+      Los archivos muestran que Epstein mantenía contacto con al menos <strong>20 ejecutivos, inversores e investigadores tecnológicos destacados</strong>. Ninguno ha sido acusado de conducta ilegal salvo Maxwell. La mención en archivos no equivale a delito.
+    </div>
+
+    <div class="email-grid">
+
+      <div class="email-card high">
+        <div class="email-header">
+          <span class="severity-badge sev-high">TECH</span>
+          <div class="email-meta">
+            <div class="email-subject">🚀 Musk en Navidades con Epstein en el Caribe</div>
+            <div class="email-from">Correos y logs — 2012–2014</div>
+          </div>
+          <span class="email-date">2012–2014</span>
+        </div>
+        <div class="email-body">
+          <p>Emails entre Musk y Epstein indican que <strong>pasaron tiempo juntos en el Caribe durante las fiestas navideñas</strong>, y al menos una vez en la isla privada de Epstein. En 2012 Musk pregunta sobre la noche de "wilder party". En oct. 2014, el staff de Epstein envía recordatorio: "Elon Musk to island Dec. 6th".</p>
+          <p>En 2014 Musk también escribió a Epstein preguntando si había fiestas planeadas, diciendo que quería "let loose" y que "una experiencia pacífica en la isla es lo opuesto de lo que busco".</p>
+        </div>
+        <div class="email-tags">
+          <span class="tag t">Isla Little Saint James</span>
+          <span class="tag n">Contradicción REFUSED</span>
+        </div>
+        <div class="email-impact">
+          <strong>⚡ Musk respondió en X:</strong> "Era consciente de que algunos emails podían malinterpretarse. No me importa eso, pero sí me importa que se procese a quienes cometieron crímenes graves con Epstein."
+        </div>
+      </div>
+
+      <div class="email-card high">
+        <div class="email-header">
+          <span class="severity-badge sev-high">TECH</span>
+          <div class="email-meta">
+            <div class="email-subject">💼 Epstein infiltra Microsoft durante búsqueda CEO para reemplazar Ballmer</div>
+            <div class="email-from">Emails internos Microsoft filtrados a Epstein</div>
+          </div>
+          <span class="email-date">~2012–2013</span>
+        </div>
+        <div class="email-body">
+          <p>Epstein desarrolló una red de fuentes dentro de Microsoft durante un período turbulento en que el directorio consideraba reemplazar al CEO Steve Ballmer. Epstein era actualizado por <strong>fuentes internas</strong> y ofrecía "asesoramiento" en el proceso de búsqueda del nuevo CEO.</p>
+          <p>Figuras tecnológicas adicionales identificadas en los archivos incluyen: <strong>Sergey Brin, Larry Page (Google), Reid Hoffman, Peter Thiel, Nathan Myhrvold (MS CTO), Joi Ito (MIT Media Lab), y el Dr. Stephen Hawking</strong> — cuyo nombre aparece 250+ veces en los documentos del DOJ.</p>
+        </div>
+        <div class="email-tags">
+          <span class="tag t">Corporate espionage</span>
+          <span class="tag n">Microsoft</span>
+          <span class="tag n">Hawking x250</span>
+        </div>
+        <div class="email-impact">
+          <strong>⚡ Epstein como broker de poder corporativo:</strong> usaba información interna de compañías como moneda de influencia en su red.
+        </div>
+      </div>
+
+      <div class="email-card medium">
+        <div class="email-header">
+          <span class="severity-badge sev-medium">MEDIUM</span>
+          <div class="email-meta">
+            <div class="email-subject">🔗 Reid Hoffman vs Musk — guerra pública por los archivos</div>
+            <div class="email-from">Contexto post-liberación</div>
+          </div>
+          <span class="email-date">Feb 2026</span>
+        </div>
+        <div class="email-body">
+          <p>Hoffman (LinkedIn, figura clave en la liberación de los archivos Epstein) y Musk (también mencionado en los archivos) <strong>se enfrentaron públicamente en X</strong>, acusándose mutuamente de haber ejercido mal juicio en sus vínculos con Epstein.</p>
+          <p>Musk: "Reid Hoffman fue un activo defensor de Epstein." Hoffman: señaló que Musk, según los propios archivos, preguntó por la 'fiesta más salvaje' en la isla.</p>
+        </div>
+        <div class="email-tags">
+          <span class="tag n">X / Twitter</span>
+          <span class="tag n">Silicon Valley drama</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══ PAGE: EMAILS SCIENCE ═══ -->
+  <div class="page" id="page-emails-science">
+    <div class="sh">
+      <h2>🔬 Red Científica de Epstein</h2>
+      <span class="sub">// Harvard, MIT, Nobel laureates y el financiero criminal</span>
+    </div>
+
+    <div class="info-box info">
+      <div class="label">🎓 Contexto</div>
+      Epstein usaba donaciones multimillonarias a instituciones académicas como forma de infiltrarse en círculos científicos de élite. <strong>Stephen Hawking aparece 250 veces</strong> en los documentos. Marvin Minsky, Seth Lloyd, Lawrence Krauss, Noam Chomsky, y Nobel laureates como Gerard 't Hooft y David Gross aparecen en los archivos.
+    </div>
+
+    <div class="email-grid">
+
+      <div class="email-card medium">
+        <div class="email-header">
+          <span class="severity-badge sev-medium">CIENCIA</span>
+          <div class="email-meta">
+            <div class="email-subject">🧠 Marvin Minsky (MIT AI Lab) — 20 años de amistad con Epstein</div>
+            <div class="email-from">Emails 2011–2016 (post mortem)</div>
+          </div>
+          <span class="email-date">2011–2016</span>
+        </div>
+        <div class="email-body">
+          <p>Minsky, co-fundador del laboratorio de IA del MIT, mantuvo correspondencia regular con Epstein. En 2014 acordó reunirse con Epstein en Harvard. En 2011, Epstein le consultó tras una operación. En 2012, el staff de Epstein le envió recordatorio de llamar a Minsky por su cumpleaños.</p>
+          <p>Tras la muerte de Minsky (2016), el staff de Epstein enviaba recordatorios a Epstein sobre eventos conmemorativos del fallecido académico.</p>
+          <div class="email-quote">
+            "You can interview. Gloria Minsky. Marvin's widow. Great. Marvin and I 20 years." — Epstein sobre su relación con Minsky
+          </div>
+        </div>
+        <div class="email-tags">
+          <span class="tag t">MIT AI Lab</span>
+          <span class="tag n">Inteligencia Artificial</span>
+          <span class="tag n">20 años relación</span>
+        </div>
+      </div>
+
+      <div class="email-card medium">
+        <div class="email-header">
+          <span class="severity-badge sev-medium">CIENCIA</span>
+          <div class="email-meta">
+            <div class="email-subject">🏛️ Harvard: "Jeffrey's Office" — Epstein donó millones al Programa de Dinámica Evolutiva</div>
+            <div class="email-from">Archivos DOJ · Nature reporta</div>
+          </div>
+          <span class="email-date">2003–2019</span>
+        </div>
+        <div class="email-body">
+          <p>Epstein donó millones al <strong>Programa de Dinámica Evolutiva de Harvard</strong> (dirigido por Martin Nowak). Una oficina en el edificio era informalmente conocida como <strong>"Jeffrey's Office"</strong>. Epstein visitaba repetidamente y programaba reuniones con académicos.</p>
+          <p>Los archivos muestran que investigadores consultaban a Epstein sobre publicaciones, visas, y más. Lisa Randall (física Harvard) voló en su jet privado. Epstein también financiaba investigaciones en física cuántica (Seth Lloyd, MIT) y cosmología.</p>
+        </div>
+        <div class="email-tags">
+          <span class="tag e">Harvard Millions</span>
+          <span class="tag t">Jeffrey's Office</span>
+          <span class="tag n">Martin Nowak</span>
+        </div>
+        <div class="email-impact">
+          <strong>⚡ Nature (revista científica):</strong> reportó que investigadores consultaban a Epstein sobre publicaciones y visas — muestra su nivel de infiltración en academia.
+        </div>
+      </div>
+
+      <div class="email-card medium">
+        <div class="email-header">
+          <span class="severity-badge sev-medium">CIENCIA</span>
+          <div class="email-meta">
+            <div class="email-subject">⚛️ Stephen Hawking: 250+ menciones — vuelos en jet privado</div>
+            <div class="email-from">Archivos DOJ</div>
+          </div>
+          <span class="email-date">2002–2019</span>
+        </div>
+        <div class="email-body">
+          <p>El nombre del difunto físico <strong>Stephen Hawking</strong> aparece más de 250 veces en la colección de documentos del DOJ. Los archivos muestran que Hawking participó en conferencias científicas organizadas por o con apoyo de Epstein, y utilizó transporte provisto por Epstein.</p>
+          <p>Portavoz de Hawking: "El profesor Hawking participó en conferencias científicas de alta categoría en los que Epstein tenía un rol financiero, pero sin conocimiento de sus actividades criminales."</p>
+        </div>
+        <div class="email-tags">
+          <span class="tag t">250+ menciones</span>
+          <span class="tag n">Conferencias científicas</span>
+          <span class="tag n">Física cuántica</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══ PAGE: UFO ═══ -->
+  <div class="page" id="page-ufo">
+    <div class="sh">
+      <h2>👽 UFOs, Telepathy & Fenómenos No-Locales</h2>
+      <span class="sub">// Correos reales de jmail.world — Chopra, savants autistas, pilotos Marina, quantum entanglement</span>
+    </div>
+
+    <div class="info-box secret">
+      <div class="label">📌 Fuente: 100% jmail.world</div>
+      Esta sección contiene únicamente correos reales extraídos de jmail.world. El correo de Deepak Chopra sobre telepathy en savants tiene <strong>70 estrellas</strong> — uno de los más marcados del archivo completo.
+    </div>
+
+    <!-- ACORDEÓN: TELEPATHY & SAVANTS -->
+    <div class="acc-section">
+      <div class="acc-header" onclick="toggleAcc(this)" style="border-color:rgba(168,85,247,0.4)">
+        <div class="acc-icon">🧠</div>
+        <div class="acc-title">
+          <h3 style="color:#c084fc">Telepathy en Savants Autistas — Registro de 300+ casos</h3>
+          <div class="acc-sub">⭐70 estrellas — uno de los correos MÁS marcados del archivo · Deepak Chopra → Epstein · Jul 2017</div>
+        </div>
+        <span class="acc-badge" style="background:rgba(168,85,247,0.2);color:#c084fc;border:1px solid var(--purple)">⭐ 70 STARS</span>
+        <span class="acc-arrow">▼</span>
+      </div>
+      <div class="acc-body">
+        <div class="email-raw" style="color:#c084fc;border-color:var(--purple)">
+          <div class="raw-from">De: Deepak Chopra → [Paul Redacted] CC: Jeffrey Epstein · Jul 18, 2017 · ⭐70 estrellas · Asunto: "RE: Savant syndrome and nonlocal mind"</div>
+          <div class="raw-body">"Paul,<br><br>Good to hear from you and your interest in <strong>telepathy in autistic children</strong>. In my recent review of our <strong>savant registry, now over 300+ cases</strong>...<br><br>all of us. We have all had some ESP/telepathy experiences but tend to dismiss them as <strong>UFO's and all the skepticism that accompanies them</strong>. Time for a serious scientific discussion..."</div>
+        </div>
+        <div class="analysis-box">
+          <div class="analysis-title">🔍 Contexto completo</div>
+          <p style="font-size:12px;color:var(--muted2);line-height:1.8;margin:0 0 10px">Chopra menciona un <strong>registro de 300+ casos de savants</strong> con posibles capacidades telepáticas. Este es el email más marcado de toda la colección sobre este tema. Chopra argumenta que experiencias de ESP y telepathy son tan comunes que deberían tomarse tan en serio como cualquier fenómeno físico — el problema es el estigma social ("como los UFOs").</p>
+          <p style="font-size:12px;color:var(--muted2);line-height:1.8;margin:0">La investigadora mencionada en hilos relacionados es <strong>Diane Powell MD</strong>, quien documentó casos de niños autistas que parecían transmitir información correcta sin haber podido recibirla por canales sensoriales normales. Epstein estaba en copia en este intercambio sobre un tema que se considera pseudocientífico pero que tiene 70 de sus contactos marcando el email como importante.</p>
+        </div>
+        <div class="doc-grid" style="margin-top:16px">
+          <div class="doc-card">
+            <div class="dc-title">Segundo correo del hilo — ⭐12 estrellas <span class="efta-tag">EFTA·Jul2017</span></div>
+            <div class="dc-date">Jul 12, 2017 · Deepak Chopra</div>
+            <div class="dc-text">Continuación del hilo de savants y telepathy. Chopra profundiza en la discusión sobre "non-local mind" — la idea de que la consciencia no está localizada en el cerebro sino distribuida en el universo cuántico. Esto conecta directamente con la teoría Orch-OR de Penrose-Hameroff que Epstein también financiaba.</div>
+          </div>
+          <div class="doc-card">
+            <div class="dc-title">Chopra + ESP como fenómeno físico real <span class="efta-tag">EFTA·2017</span></div>
+            <div class="dc-date">Hilo relacionado · Múltiples correos</div>
+            <div class="dc-text">Chopra argumenta que el estigma hacia ESP/telepathy es análogo al que existía hacia los meteoritos en el siglo XVIII (científicos rechazaban que cayeran "piedras del cielo"). La red de Epstein trataba este tema con total seriedad científica — no como charlatanería.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACORDEÓN: PILOTOS MARINA -->
+    <div class="acc-section">
+      <div class="acc-header" onclick="toggleAcc(this)" style="border-color:rgba(0,150,255,0.4)">
+        <div class="acc-icon">✈️</div>
+        <div class="acc-title">
+          <h3 style="color:#60a5fa">Pilotos de la Marina + UFOs — En el inbox de Epstein (2019)</h3>
+          <div class="acc-sub">Washington Post article · Abr 25, 2019 · Archivado por Epstein 4 meses antes de su muerte</div>
+        </div>
+        <span class="acc-badge" style="background:rgba(0,150,255,0.2);color:#60a5fa;border:1px solid #3b82f6">ARCHIVADO</span>
+        <span class="acc-arrow">▼</span>
+      </div>
+      <div class="acc-body">
+        <div class="email-raw" style="color:#60a5fa;border-color:#3b82f6">
+          <div class="raw-from">Washington Post newsletter → inbox jeevacation@gmail.com · Apr 25, 2019</div>
+          <div class="raw-body">"<strong>Angry pilots got the Navy to stop dismissing UFO sightings</strong>" — artículo de Washington Post en el inbox de Epstein. Archivado 4 meses antes de su muerte (Aug 10, 2019).</div>
+        </div>
+        <div class="analysis-box">
+          <div class="analysis-title">🔍 Contexto</div>
+          El artículo del WP (Abr 2019) revelaba que pilotos de la Marina habían presionado al Pentágono para actualizar sus protocolos de reporte de UAPs después de múltiples avistamientos de objetos que maniobraban de forma imposible para tecnología conocida. Epstein archivó esto en abril 2019. En agosto 2019 murió en prisión. El Pentágono confirmó los videos ("Tic Tac", "Gimbal", "Go Fast") meses después. Epstein tenía acceso a la red DARPA y al ministro de defensa israelí — ¿tenía información adicional sobre qué eran estos objetos?
+        </div>
+      </div>
+    </div>
+
+    <!-- ACORDEÓN: QUANTUM ENTANGLEMENT / SPOOKY -->
+    <div class="acc-section">
+      <div class="acc-header" onclick="toggleAcc(this)" style="border-color:rgba(100,100,255,0.4)">
+        <div class="acc-icon">🌌</div>
+        <div class="acc-title">
+          <h3 style="color:#a0a0ff">Quantum Entanglement — "Spooky Action at a Distance"</h3>
+          <div class="acc-sub">⭐5 estrellas · NYT 2015 · vi r f 2011 · Entrelazamiento cuántico como posible mecanismo de comunicación no-local</div>
+        </div>
+        <span class="acc-badge" style="background:rgba(100,100,255,0.2);color:#a0a0ff;border:1px solid #8080ff">CUÁNTICO</span>
+        <span class="acc-arrow">▼</span>
+      </div>
+      <div class="acc-body">
+        <div class="doc-grid">
+          <div class="doc-card">
+            <div class="dc-title">"Quantum Theory Experiment Said to Prove 'Spooky' Interactions" <span class="efta-tag">EFTA·Oct2015</span></div>
+            <div class="dc-date">Oct 21, 2015 · Unknown → Epstein · ⭐5 estrellas</div>
+            <div class="dc-text">Artículo del New York Times sobre el experimento de Delft (Países Bajos) que probó definitivamente el entrelazamiento cuántico sin laguna: dos fotones a 1.3km de distancia colapsaron simultáneamente sin señal física entre ellos. <em style="color:#a0a0ff">"So cool"</em> — comentario del remitente. Einstein llamó a esto "spooky action at a distance". La red de Epstein lo marcó con ⭐5.</div>
+          </div>
+          <div class="doc-card">
+            <div class="dc-title">Quantum Entanglement for the Masses <span class="efta-tag">EFTA·Mar2011</span></div>
+            <div class="dc-date">Mar 21, 2011 · "vi r f" → Epstein · ⭐5 estrellas</div>
+            <div class="dc-text">Link a Scientific American: "Do-it-yourself quantum spooky action" — artículo explicando el entrelazamiento cuántico para no-físicos. Enviado con ⭐5. El remitente "vi r f" (identidad redactada con 5 estrellas) enviaba regularmente a Epstein contenido sobre física cuántica fundamental.</div>
+          </div>
+          <div class="doc-card">
+            <div class="dc-title">Epstein: Quantum como comunicación instantánea <span class="efta-tag">EFTA·Jun2009</span></div>
+            <div class="dc-date">Jun 18, 2009 · Jeffrey Epstein → [unknown]</div>
+            <div class="dc-text"><em style="color:#a0a0ff">"arguably, with in minutes if done on a quantum level. — as you would be looking at all permuations of patterns all at once. similar to quantum key"</em> — Epstein especulando en sus propios emails sobre computación cuántica y comunicación. En 2009, antes de que quantum computing fuera mainstream, Epstein ya discutía sus implicaciones para claves criptográficas.</div>
+          </div>
+          <div class="doc-card">
+            <div class="dc-title">Deepak Chopra — Quantum Entanglement en cerebros <span class="efta-tag">EFTA·Mar2017</span></div>
+            <div class="dc-date">Mar 6, 2017 · jeffrey E. → Chopra</div>
+            <div class="dc-text"><em style="color:#a0a0ff">"Meeting this professor who studies <strong>quantum entanglement in brains</strong>"</em> — Epstein informando a Chopra de una reunión con un investigador que estudiaba entrelazamiento cuántico en tejido cerebral. Esta es la intersección directa entre la red UFO/fenómenos y la red de consciencia cuántica que Epstein orquestaba.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACORDEÓN: UFO MOVIE -->
+    <div class="acc-section">
+      <div class="acc-header" onclick="toggleAcc(this)" style="border-color:rgba(255,165,0,0.4)">
+        <div class="acc-icon">🎬</div>
+        <div class="acc-title">
+          <h3 style="color:#fbbf24">Epstein quería ser productor de la película "UFO"</h3>
+          <div class="acc-sub">Nov–Dic 2009 · Robert Evans · Henri Kessler (Paramount) · Derechos IP de la serie británica UFO (1970)</div>
+        </div>
+        <span class="acc-badge" style="background:rgba(255,165,0,0.2);color:#fbbf24;border:1px solid #f59e0b">ENTRETENIMIENTO</span>
+        <span class="acc-arrow">▼</span>
+      </div>
+      <div class="acc-body">
+        <div class="email-raw" style="color:#fbbf24;border-color:#f59e0b">
+          <div class="raw-from">De: Henri Kessler (Paramount) → Epstein / Robert Evans → Epstein · Nov–Dic 2009</div>
+          <div class="raw-body">Epstein negocia convertirse en <strong>executive producer</strong> de la película "UFO" basada en la serie británica de los años 70. Henri Kessler organiza llamadas con Robert Evans (productor de <em>El Padrino, Chinatown, Love Story</em>). Epstein evalúa los derechos IP de "UFO" y decide si invertir como financiador de la producción.</div>
+        </div>
+        <div class="analysis-box">
+          <div class="analysis-title">🔍 Contexto</div>
+          Robert Evans fue uno de los productores más legendarios de Hollywood. "UFO" era una serie de ciencia ficción británica de los 70 sobre una organización secreta llamada SHADO (Supreme Headquarters Alien Defence Organisation) que combatía invasiones extraterrestres. Epstein quería los derechos para hacer una película hollywoodense. La combinación de su interés en UFOs reales (pilotos Marina, archivos clasificados) y en producir contenido de entretenimiento sobre UFOs es documentada en el archivo.
+        </div>
+      </div>
+    </div>
+
+    <!-- ACORDEÓN: DEEPAK CHOPRA LSD + CUÁNTICA -->
+    <div class="acc-section">
+      <div class="acc-header" onclick="toggleAcc(this)" style="border-color:rgba(168,85,247,0.4)">
+        <div class="acc-icon">💊</div>
+        <div class="acc-title">
+          <h3 style="color:#c084fc">LSD + Quantum Healing + Platón — Almuerzo con Chopra</h3>
+          <div class="acc-sub">⭐26 estrellas · Jun 2018 · Psychology Today · Chopra → Epstein — psicodélicos antes del "psychedelic renaissance"</div>
+        </div>
+        <span class="acc-badge" style="background:rgba(168,85,247,0.2);color:#c084fc;border:1px solid var(--purple)">⭐ 26 STARS</span>
+        <span class="acc-arrow">▼</span>
+      </div>
+      <div class="acc-body">
+        <div class="email-raw" style="color:#c084fc;border-color:var(--purple)">
+          <div class="raw-from">De: Deepak Chopra → Epstein · Jun 6, 2018 · ⭐26 estrellas</div>
+          <div class="raw-body">Chopra comparte artículo de Psychology Today: <strong>"Lunch with Deepak I: LSD, Quantum Healing, and Plato"</strong><br>URL: psychologytoday.com/us/blog/psyched/201806/lunch-deepak-i-lsd-quantum-healing-and-plato</div>
+        </div>
+        <div class="analysis-box">
+          <div class="analysis-title">🔍 Contexto: El triángulo LSD-Cuántica-Consciencia</div>
+          <p style="font-size:12px;color:var(--muted2);line-height:1.8;margin:0 0 10px">El artículo describe un almuerzo donde Chopra explica su visión de "quantum healing" — la idea de que la mente cuántica puede influir en procesos biológicos — y conecta esto con la experiencia psicodélica. En 2018 esto era marginalmente aceptable; en 2023-2024 el "psychedelic renaissance" (Johns Hopkins, NYU, MAPS) validaría muchas de estas ideas.</p>
+          <p style="font-size:12px;color:var(--muted2);line-height:1.8;margin:0">Epstein en este período: financiaba el Penrose Institute (consciencia cuántica), tenía acceso a DARPA Brain Device (mejora cognitiva), y su círculo íntimo discutía LSD como herramienta de expansión de consciencia. El triángulo LSD-cuántica-consciencia era el tema unificador de su red científica más esotérica.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══ PAGE: NETWORK ═══ -->
+  <div class="page" id="page-network">
+    <div class="sh">
+      <h2>🕸️ Red de Contactos</h2>
+      <span class="sub">// 44+ nodos identificados en el grafo de comunicaciones</span>
+    </div>
+
+    <div class="people-grid">
+      <div class="person-card pc-inner"><div class="person-name">Jeffrey Epstein</div><div class="person-role">Nodo central · Hub de la red</div><span class="person-cat pcat-inner">Hub Principal</span></div>
+      <div class="person-card pc-inner"><div class="person-name">Ghislaine Maxwell</div><div class="person-role">Cómplice directa · 20 años prisión</div><span class="person-cat pcat-inner">Inner Circle</span></div>
+      <div class="person-card pc-inner"><div class="person-name">Jean-Luc Brunel</div><div class="person-role">Socio operativo · Muerto en prisión 2022</div><span class="person-cat pcat-inner">Inner Circle</span></div>
+      <div class="person-card pc-inner"><div class="person-name">Sarah Kellen</div><div class="person-role">Asistente personal</div><span class="person-cat pcat-inner">Staff</span></div>
+      <div class="person-card pc-inner"><div class="person-name">Lesley Groff</div><div class="person-role">Asistente ejecutiva</div><span class="person-cat pcat-inner">Staff</span></div>
+      <div class="person-card pc-inner"><div class="person-name">Darren Indyke</div><div class="person-role">Abogado — administrador estate</div><span class="person-cat pcat-inner">Legal</span></div>
+      <div class="person-card pc-inner"><div class="person-name">Nadia Marcinkova</div><div class="person-role">Asociada — piloto aeronáutica</div><span class="person-cat pcat-inner">Inner</span></div>
+
+      <div class="person-card pc-politics"><div class="person-name">Ehud Barak</div><div class="person-role">Ex Primer Ministro de Israel</div><span class="person-cat pcat-politics">Política</span></div>
+      <div class="person-card pc-politics"><div class="person-name">Prince Andrew</div><div class="person-role">Arrestado Feb 2026 · Ex realeza UK</div><span class="person-cat pcat-politics">Política 🚔</span></div>
+      <div class="person-card pc-politics"><div class="person-name">Peter Mandelson</div><div class="person-role">Arrestado Feb 2026 · Ex embajador UK</div><span class="person-cat pcat-politics">Política 🚔</span></div>
+      <div class="person-card pc-politics"><div class="person-name">Steve Bannon</div><div class="person-role">Estratega Trump · cientos de textos</div><span class="person-cat pcat-politics">Política</span></div>
+      <div class="person-card pc-politics"><div class="person-name">Ken Starr</div><div class="person-role">Ex Fiscal Especial</div><span class="person-cat pcat-politics">Política/Legal</span></div>
+      <div class="person-card pc-politics"><div class="person-name">Howard Lutnick</div><div class="person-role">Sec. Comercio Trump 2025</div><span class="person-cat pcat-politics">Política</span></div>
+      <div class="person-card pc-politics"><div class="person-name">Peter Mandelson</div><div class="person-role">Thorbjørn Jagland (Ex PM Noruega)</div><span class="person-cat pcat-politics">Política</span></div>
+      <div class="person-card pc-politics"><div class="person-name">Peter Mandelson UK</div><div class="person-role">Lajcak (consejero PM Eslovaquia) — renunció</div><span class="person-cat pcat-politics">Política</span></div>
+
+      <div class="person-card pc-tech"><div class="person-name">Elon Musk</div><div class="person-role">Tesla, SpaceX, X — emails isla 2012-14</div><span class="person-cat pcat-tech">Tech</span></div>
+      <div class="person-card pc-tech"><div class="person-name">Bill Gates</div><div class="person-role">Microsoft — divorciado por relación Epstein</div><span class="person-cat pcat-tech">Tech</span></div>
+      <div class="person-card pc-tech"><div class="person-name">Reid Hoffman</div><div class="person-role">LinkedIn / VC — vs Musk en X</div><span class="person-cat pcat-tech">Tech</span></div>
+      <div class="person-card pc-tech"><div class="person-name">Peter Thiel</div><div class="person-role">Palantir / VC</div><span class="person-cat pcat-tech">Tech</span></div>
+      <div class="person-card pc-tech"><div class="person-name">Sergey Brin</div><div class="person-role">Google co-fundador</div><span class="person-cat pcat-tech">Tech</span></div>
+      <div class="person-card pc-tech"><div class="person-name">Larry Page</div><div class="person-role">Google co-fundador</div><span class="person-cat pcat-tech">Tech</span></div>
+      <div class="person-card pc-tech"><div class="person-name">Kimbal Musk</div><div class="person-role">Hermano de Elon</div><span class="person-cat pcat-tech">Tech</span></div>
+      <div class="person-card pc-tech"><div class="person-name">Jason Calacanis</div><div class="person-role">Inversor / All-in Podcast</div><span class="person-cat pcat-tech">Tech</span></div>
+      <div class="person-card pc-tech"><div class="person-name">Boris Nikolic</div><div class="person-role">Biotech / Bill Gates Foundation</div><span class="person-cat pcat-tech">Tech</span></div>
+      <div class="person-card pc-tech"><div class="person-name">Masha Bucher</div><div class="person-role">VC / Day One Ventures</div><span class="person-cat pcat-tech">Tech</span></div>
+
+      <div class="person-card pc-academia"><div class="person-name">Noam Chomsky</div><div class="person-role">MIT lingüista / filósofo</div><span class="person-cat pcat-academia">Academia</span></div>
+      <div class="person-card pc-academia"><div class="person-name">Marvin Minsky</div><div class="person-role">MIT AI Lab co-fundador (†2016)</div><span class="person-cat pcat-academia">Academia</span></div>
+      <div class="person-card pc-academia"><div class="person-name">Lawrence Krauss</div><div class="person-role">Físico teórico / ASU</div><span class="person-cat pcat-academia">Academia</span></div>
+      <div class="person-card pc-academia"><div class="person-name">Seth Lloyd</div><div class="person-role">Computación cuántica MIT</div><span class="person-cat pcat-academia">Academia</span></div>
+      <div class="person-card pc-academia"><div class="person-name">Alan Dershowitz</div><div class="person-role">Harvard Law — defensor Epstein</div><span class="person-cat pcat-academia">Legal</span></div>
+      <div class="person-card pc-academia"><div class="person-name">Stephen Hawking</div><div class="person-role">Físico (†2018) — 250+ menciones DOJ</div><span class="person-cat pcat-academia">Academia</span></div>
+      <div class="person-card pc-academia"><div class="person-name">Neri Oxman</div><div class="person-role">MIT Media Lab / arquitecta</div><span class="person-cat pcat-academia">Academia</span></div>
+      <div class="person-card pc-academia"><div class="person-name">Deepak Chopra</div><div class="person-role">Medicina / wellness</div><span class="person-cat pcat-academia">Academia</span></div>
+      <div class="person-card pc-academia"><div class="person-name">Al Seckel</div><div class="person-role">Ilusionista / divulgador — borró perfil Wikipedia</div><span class="person-cat pcat-academia">Ciencia</span></div>
+      <div class="person-card pc-academia"><div class="person-name">Joscha Bach</div><div class="person-role">IA cognitiva</div><span class="person-cat pcat-academia">Academia</span></div>
+      <div class="person-card pc-academia"><div class="person-name">Peter Attia</div><div class="person-role">Medicina / longevidad</div><span class="person-cat pcat-academia">Medicina</span></div>
+
+      <div class="person-card pc-finance"><div class="person-name">Larry Summers</div><div class="person-role">Ex Sec. del Tesoro / Harvard</div><span class="person-cat pcat-finance">Finanzas</span></div>
+      <div class="person-card pc-finance"><div class="person-name">Tom Pritzker</div><div class="person-role">Hyatt / inversiones</div><span class="person-cat pcat-finance">Finanzas</span></div>
+      <div class="person-card pc-finance"><div class="person-name">Sultan Bin Sulayem</div><div class="person-role">DP World / EAU</div><span class="person-cat pcat-finance">Finanzas</span></div>
+      <div class="person-card pc-finance"><div class="person-name">Jes Staley</div><div class="person-role">Ex CEO Barclays — correspondencia clave</div><span class="person-cat pcat-finance">Finanzas</span></div>
+
+      <div class="person-card pc-media"><div class="person-name">Michael Wolff</div><div class="person-role">Periodista / Fire and Fury</div><span class="person-cat pcat-media">Media</span></div>
+      <div class="person-card pc-media"><div class="person-name">Matthew Hiltzik</div><div class="person-role">PR / Comunicaciones</div><span class="person-cat pcat-media">Media</span></div>
+      <div class="person-card pc-media"><div class="person-name">Kathryn Ruemmler</div><div class="person-role">Ex Consejera Casa Blanca Obama</div><span class="person-cat pcat-media">Legal/Política</span></div>
+    </div>
+  </div>
+
+  <!-- ═══ PAGE: TIMELINE ═══ -->
+  <div class="page" id="page-timeline">
+    <div class="sh">
+      <h2>📅 Timeline 2025–2026</h2>
+      <span class="sub">// Cronología de la liberación de archivos y consecuencias</span>
+    </div>
+
+    <div class="timeline">
+      <div class="tl-item gold">
+        <div class="tl-date">Nov 2025</div>
+        <div class="tl-title">Primer dump: House Oversight Committee</div>
+        <div class="tl-desc">8,624 documentos. Lanzamiento de Jmail por Riley Walz y Luke Igel en 5 horas. Primer escándalo Mandelson: despedido como embajador UK-USA por Starmer.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-date">Ene 2026 — 30 Ene</div>
+        <div class="tl-title">Mega-dump DOJ: 3+ millones de páginas</div>
+        <div class="tl-desc">1,401,320 documentos DOJ. Error técnico: DOJ expone información de ~100 víctimas sin redactar. Archivos temporalmente retirados.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-date">31 Ene 2026</div>
+        <div class="tl-title">Revelaciones explosivas: Musk, Gates, Andrew, Mandelson</div>
+        <div class="tl-desc">Emails isla Epstein con Musk, borradores sobre Gates, fotos Prince Andrew, leaks UK gobierno. Primeras resignaciones corporativas.</div>
+      </div>
+      <div class="tl-item gold">
+        <div class="tl-date">2 Feb 2026</div>
+        <div class="tl-title">Debate Parlamento UK — Mandelson bajo escrutinio total</div>
+        <div class="tl-desc">Cabinet Secretary ordena revisión archivos del período 2008-2010. Starmer admite que Mandelson "mintió repetidamente".</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-date">5 Feb 2026</div>
+        <div class="tl-title">Mandelson renuncia al Partido Laborista</div>
+        <div class="tl-desc">"No deseo causar más vergüenza al Labour." También renuncia a la House of Lords.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-date">14 Feb 2026</div>
+        <div class="tl-title">Trump anuncia liberación documentos UAP/Aliens</div>
+        <div class="tl-desc">Massie: "arma definitiva de distracción masiva". Obama 2026 dice que aliens "son reales".</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-date">19 Feb 2026</div>
+        <div class="tl-title">🚔 Prince Andrew ARRESTADO</div>
+        <div class="tl-desc">Metropolitan Police. "Misconduct in public office". 11 horas en custodia. Liberado bajo investigación.</div>
+      </div>
+      <div class="tl-item gold">
+        <div class="tl-date">21 Feb 2026</div>
+        <div class="tl-title">Mandelson: nuevas revelaciones ($75,000 pagos)</div>
+        <div class="tl-desc">Transfers de Epstein a cuentas vinculadas a la pareja de Mandelson. Starmer: "nos traicionó a todos".</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-date">23 Feb 2026</div>
+        <div class="tl-title">🚔 Peter Mandelson ARRESTADO en Camden</div>
+        <div class="tl-desc">Metropolitan Police registra dos propiedades. Liberado bajo fianza. Investigación en curso.</div>
+      </div>
+      <div class="tl-item teal">
+        <div class="tl-date">Feb 2026</div>
+        <div class="tl-title">Jmail alcanza: 1,038,603 emails archivados</div>
+        <div class="tl-desc">1,412,250 archivos totales. 2,474,242 páginas. El equipo expande a JVR, Jotify, JMessage, Jacebook.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ PAGE: TOPICS ═══ -->
+  <div class="page" id="page-topics">
+    <div class="sh">
+      <h2>🏷️ Taxonomía de Temas</h2>
+      <span class="sub">// Clasificación de los 4 temas principales + subtemas</span>
+    </div>
+
+    <div class="topic-grid">
+      <div class="topic-card">
+        <div class="topic-icon">💬</div>
+        <div class="topic-name">Pedidos de consejo a Epstein</div>
+        <div class="topic-desc">Políticos, científicos y empresarios solicitando orientación, favores, mediación o contactos. Revela el rol de Epstein como broker de poder global. Incluye desde ayuda para conseguir empleo hasta consejos sobre cómo manejar escándalos.</div>
+      </div>
+      <div class="topic-card">
+        <div class="topic-icon">🤝</div>
+        <div class="topic-name">Introducciones y networking</div>
+        <div class="topic-desc">Epstein conectando élites entre sí: científicos con inversores, políticos con banqueros, etc. Este patrón le daba influencia bidireccional — sabía lo que cada parte buscaba del otro.</div>
+      </div>
+      <div class="topic-card">
+        <div class="topic-icon">🛡️</div>
+        <div class="topic-name">Damage control</div>
+        <div class="topic-desc">Coordinación de respuestas ante investigaciones, cobertura mediática negativa, y presión legal. Incluye campaña para limpiar su perfil de Wikipedia (Al Seckel), documentales con Bannon, y estrategias de rehabilitación de imagen.</div>
+      </div>
+      <div class="topic-card">
+        <div class="topic-icon">🕸️</div>
+        <div class="topic-name">Conspiración con Brunel</div>
+        <div class="topic-desc">Comunicaciones con Jean-Luc Brunel (modelling mogul, muerto en prisión 2022) sobre actividades conjuntas. Documentan la red operativa central y el mecanismo de reclutamiento.</div>
+      </div>
+      <div class="topic-card">
+        <div class="topic-icon">🏛️</div>
+        <div class="topic-name">Secretos de Estado filtrados</div>
+        <div class="topic-desc">Información de gobierno sensible transmitida a Epstein por funcionarios activos: memos del PM Brown, seudónimo seguro del PM, rescate eurozona, dimisión Brown anticipada, política fiscal bancaria UK.</div>
+      </div>
+      <div class="topic-card">
+        <div class="topic-icon">💰</div>
+        <div class="topic-name">Finanzas y chantaje</div>
+        <div class="topic-desc">Pagos a contactos ($75K a pareja Mandelson), ofertas de trabajo millonarias tramitadas por Epstein ($4-10M/año Deutsche Bank), información de mercado usable para trading, investigación DEA por lavado de dinero.</div>
+      </div>
+      <div class="topic-card">
+        <div class="topic-icon">🔬</div>
+        <div class="topic-name">Patronazgo científico</div>
+        <div class="topic-desc">Donaciones millonarias a Harvard (Program for Evolutionary Dynamics), MIT (AI Lab, Media Lab, computación cuántica), y otras instituciones. Epstein usaba el dinero para acceder a investigación de frontera y mantener influencia académica.</div>
+      </div>
+      <div class="topic-card">
+        <div class="topic-icon">🌍</div>
+        <div class="topic-name">Geopolítica informal</div>
+        <div class="topic-desc">Intento de contacto con Putin para "reinventar el sistema financiero mundial", conexiones con inteligencia israelí (Ehud Barak), sistema de cámaras instalado por empresa israelí, nexos con figuras del Consejo de Europa.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ PAGE: ARRESTS ═══ -->
+  <div class="page" id="page-arrests">
+    <div class="sh">
+      <h2>🚔 Arrestos, Dimisiones y Consecuencias</h2>
+      <span class="sub">// Impacto real documentado a febrero 2026</span>
+    </div>
+
+    <div class="info-box warn">
+      <div class="label">⚡ Escala del impacto</div>
+      Según Fast Company: los archivos Epstein llevaron a <strong>múltiples dimisiones de ejecutivos corporativos</strong>, nuevas investigaciones, y el <strong>arresto de un miembro de la familia real del Reino Unido</strong> — primera vez en la historia moderna.
+    </div>
+
+    <div class="email-grid">
+
+      <div class="email-card critical">
+        <div class="email-header">
+          <span class="severity-badge sev-critical">ARRESTADO</span>
+          <div class="email-meta">
+            <div class="email-subject">🚔 Peter Mandelson — ex embajador UK-USA</div>
+          </div>
+          <span class="email-date">23 Feb 2026</span>
+        </div>
+        <div class="email-body">
+          <p>Arrestado por "misconduct in public office" por la Metropolitan Police en su domicilio de Camden. Dos propiedades registradas (Wiltshire y Camden). Liberado bajo fianza. Anteriormente: despedido como embajador (Sep 2025), renunció al Labour Party y a la House of Lords (Feb 2026). Retirado de honores y títulos.</p>
+        </div>
+        <div class="email-tags"><span class="tag e">UK Politics</span><span class="tag n">Secretos Estado</span><span class="tag n">$75K pagos</span></div>
+      </div>
+
+      <div class="email-card critical">
+        <div class="email-header">
+          <span class="severity-badge sev-critical">ARRESTADO</span>
+          <div class="email-meta">
+            <div class="email-subject">👑 Andrew Mountbatten-Windsor — ex Príncipe Andrew</div>
+          </div>
+          <span class="email-date">19 Feb 2026</span>
+        </div>
+        <div class="email-body">
+          <p>Primer miembro de la familia real británica arrestado en investigación criminal moderna. Detenido 11 horas. "Misconduct in public office" — sospecha de pasar información gubernamental a Epstein. Ya había sido despojado de títulos y deberes reales tras el escándalo de Virginia Giuffre.</p>
+        </div>
+        <div class="email-tags"><span class="tag e">Familia Real</span><span class="tag n">Buckingham Palace emails</span></div>
+      </div>
+
+      <div class="email-card high">
+        <div class="email-header">
+          <span class="severity-badge sev-high">RENUNCIÓ</span>
+          <div class="email-meta">
+            <div class="email-subject">🇸🇰 Martin Lajcak — Consejero Seguridad Nacional Eslovaquia</div>
+          </div>
+          <span class="email-date">31 Ene 2026</span>
+        </div>
+        <div class="email-body">
+          <p>Renunció el mismo día de la liberación de los archivos, tras aparecer sus comunicaciones con Epstein. Partidos de oposición y socios de la coalición nacionalista de Fico exigieron su dimisión inmediata.</p>
+        </div>
+        <div class="email-tags"><span class="tag n">Eslovaquia</span><span class="tag n">Consecuencia inmediata</span></div>
+      </div>
+
+      <div class="email-card high">
+        <div class="email-header">
+          <span class="severity-badge sev-high">RENUNCIÓ</span>
+          <div class="email-meta">
+            <div class="email-subject">🇬🇧 Morgan McSweeney — Jefe de Gabinete del PM Starmer</div>
+          </div>
+          <span class="email-date">Feb 2026</span>
+        </div>
+        <div class="email-body">
+          <p>Renunció como consecuencia del escándalo Mandelson-Epstein. McSweeney había sido quien recomendó a Mandelson para el cargo de embajador en Washington, y se comunicaba con Mandelson diariamente.</p>
+        </div>
+        <div class="email-tags"><span class="tag n">Downing Street</span><span class="tag n">Consecuencia política</span></div>
+      </div>
+
+      <div class="email-card high">
+        <div class="email-header">
+          <span class="severity-badge sev-high">INVESTIGADO</span>
+          <div class="email-meta">
+            <div class="email-subject">🇳🇴 Thorbjørn Jagland — ex Primer Ministro Noruega</div>
+          </div>
+          <span class="email-date">Feb 2026</span>
+        </div>
+        <div class="email-body">
+          <p>Policía noruega abre investigación tras revelarse sus emails con Epstein sobre transmitir mensajes a Putin para "reinventar el sistema financiero mundial". Jagland era también Secretario General del Consejo de Europa.</p>
+        </div>
+        <div class="email-tags"><span class="tag n">Noruega</span><span class="tag n">Rusia/Putin</span></div>
+      </div>
+
+      <div class="email-card medium">
+        <div class="email-header">
+          <span class="severity-badge sev-medium">CONSECUENCIAS</span>
+          <div class="email-meta">
+            <div class="email-subject">🏛️ UK: Presión para quitar peerages — House of Lords bajo reforma</div>
+          </div>
+          <span class="email-date">Feb 2026</span>
+        </div>
+        <div class="email-body">
+          <p>El gobierno UK escribió a las autoridades de la House of Lords solicitando inicio de proceso para poder retirar peerages a quienes traigan descrédito a la institución. Esto afectaría a Mandelson (Baron Mandelson of Foy). El PM Starmer enfrenta su mayor crisis de gobierno.</p>
+        </div>
+        <div class="email-tags"><span class="tag n">Reforma constitucional UK</span><span class="tag n">Starmer crisis</span></div>
+      </div>
+
+      <div class="email-card medium">
+        <div class="email-header">
+          <span class="severity-badge sev-medium">DOJ ERROR</span>
+          <div class="email-meta">
+            <div class="email-subject">⚠️ DOJ expone identidades de ~100 víctimas sin redactar</div>
+          </div>
+          <span class="email-date">30 Ene 2026</span>
+        </div>
+        <div class="email-body">
+          <p>En el mega-dump del 30 de enero, el DOJ cometió un "error técnico" que expuso información identificativa de aproximadamente 100 sobrevivientes. Las víctimas expresaron horror. Los archivos fueron temporalmente retirados. El DOJ reconoció el error y prometió corrección.</p>
+        </div>
+        <div class="email-tags"><span class="tag e">DOJ Error</span><span class="tag n">Víctimas re-victimizadas</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══ PAGE: CLASSIFIED ═══ -->
+  <div id="page-classified" class="page">
+
+    <div style="background:linear-gradient(135deg,rgba(255,0,64,0.18),rgba(0,0,0,0.5));border:2px solid #ff0040;border-radius:16px;padding:28px;margin-bottom:28px;text-align:center">
+      <div style="font-size:44px;margin-bottom:10px">🔐</div>
+      <h2 style="font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:#ff4060;margin-bottom:8px">INFO CLASIFICADA — EXTRAÍDA DE JMAIL.WORLD</h2>
+      <p style="color:var(--muted2);font-size:13px;max-width:760px;margin:0 auto;line-height:1.8">Todo lo que ves aquí fue buscado y extraído en tiempo real directamente del archivo de <strong style="color:#fff">1,038,603 correos</strong> de Jeffrey Epstein publicados por el Congreso de EE.UU. Cada cita incluye el código EFTA del documento DOJ. No hay información de internet público en esta sección.</p>
+      <div style="display:flex;gap:12px;justify-content:center;margin-top:16px;flex-wrap:wrap;font-size:11px">
+        <span style="background:rgba(255,0,64,0.2);border:1px solid #ff0040;padding:4px 12px;border-radius:20px;color:#ff8090">🎯 DARPA · 155 correos</span>
+        <span style="background:rgba(100,100,255,0.2);border:1px solid #8080ff;padding:4px 12px;border-radius:20px;color:#a0a0ff">⚛️ QUANTUM · 991 correos</span>
+        <span style="background:rgba(168,85,247,0.2);border:1px solid var(--purple);padding:4px 12px;border-radius:20px;color:#c084fc">🧠 CONSCIOUSNESS · 43 correos</span>
+        <span style="background:rgba(255,165,0,0.2);border:1px solid #ffd700;padding:4px 12px;border-radius:20px;color:#ffd700">⭐ LOWELL WOOD · 28 correos</span>
+        <span style="background:rgba(0,212,180,0.2);border:1px solid var(--teal);padding:4px 12px;border-radius:20px;color:var(--teal)">🧬 CRISPR/DNA · 4+ correos</span>
+      </div>
+    </div>
+
+    <!-- ========== ACCORDION STYLES ========== -->
+    <style>
+    .acc-section { margin-bottom:18px; }
+    .acc-header {
+      display:flex;align-items:center;gap:14px;padding:16px 20px;
+      background:rgba(255,255,255,0.03);border:1px solid var(--border2);
+      border-radius:10px;cursor:pointer;transition:all 0.2s;user-select:none;
+    }
+    .acc-header:hover { background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.2); }
+    .acc-header.open { border-radius:10px 10px 0 0;border-bottom:none; }
+    .acc-icon { font-size:26px;flex-shrink:0; }
+    .acc-title { flex:1; }
+    .acc-title h3 { font-family:'Syne',sans-serif;font-size:17px;font-weight:700;margin:0 0 3px; }
+    .acc-title .acc-sub { font-size:11px;color:var(--muted2); }
+    .acc-badge { font-size:10px;font-weight:800;padding:3px 10px;border-radius:12px;flex-shrink:0; }
+    .acc-arrow { font-size:18px;color:var(--muted2);transition:transform 0.3s;flex-shrink:0; }
+    .acc-header.open .acc-arrow { transform:rotate(180deg); }
+    .acc-body {
+      display:none;padding:22px;background:rgba(0,0,0,0.2);
+      border:1px solid var(--border2);border-top:none;border-radius:0 0 10px 10px;
+    }
+    .acc-body.open { display:block; }
+    .email-raw {
+      background:rgba(0,0,0,0.4);border-left:3px solid currentColor;
+      border-radius:0 8px 8px 0;padding:14px 16px;margin:12px 0;
+      font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.8;
+    }
+    .email-raw .raw-from { color:var(--muted2);font-size:10px;margin-bottom:8px; }
+    .email-raw .raw-body { color:#e0e0e0; }
+    .email-raw strong { color:#fff; }
+    .analysis-box {
+      background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);
+      border-radius:8px;padding:14px;margin-top:14px;font-size:12px;
+      color:var(--muted2);line-height:1.8;
+    }
+    .analysis-box .analysis-title { font-weight:700;color:#fff;margin-bottom:6px;font-size:13px; }
+    .doc-grid { display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0; }
+    .doc-card {
+      background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.08);
+      border-radius:8px;padding:14px;
+    }
+    .doc-card .dc-title { font-size:12px;font-weight:700;color:#fff;margin-bottom:6px; }
+    .doc-card .dc-date { font-size:10px;color:var(--muted2);margin-bottom:8px; }
+    .doc-card .dc-text { font-size:11px;color:var(--muted2);line-height:1.7; }
+    .efta-tag { display:inline-block;font-size:9px;font-family:'IBM Plex Mono',monospace;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);padding:2px 6px;border-radius:3px;color:var(--muted2);margin-left:6px; }
+    </style>
+
+    <!-- ═══ SECTION 1: DARPA ═══ -->
+    <div class="acc-section">
+      <div class="acc-header" onclick="toggleAcc(this)" style="border-color:rgba(255,50,50,0.4)">
+        <div class="acc-icon">🎯</div>
+        <div class="acc-title">
+          <h3 style="color:#ff6060">DARPA — Red Secreta de Defensa</h3>
+          <div class="acc-sub">Director de DARPA · Ministro Defensa Israel · DARPA-BTO Polymaths · Cybersecurity · 155 correos en archivo</div>
+        </div>
+        <span class="acc-badge" style="background:rgba(255,50,50,0.2);color:#ff6060;border:1px solid #ff4040">155 CORREOS</span>
+        <span class="acc-arrow">▼</span>
+      </div>
+      <div class="acc-body">
+
+        <div class="doc-grid">
+          <div class="doc-card">
+            <div class="dc-title">Boris Nikolic organiza cena privada con Directora DARPA <span class="efta-tag">EFTA·Nov2010</span></div>
+            <div class="dc-date">Nov 9, 2010 · Boris Nikolic → Epstein</div>
+            <div class="email-raw" style="color:#ff6060;border-color:#ff4040">
+              <div class="raw-from">De: Boris Nikolic (BGC3) · A: [Epstein network]</div>
+              <div class="raw-body">"east. I am in DC attending too many mtgs. Yesterday I organized a dinner with <strong>Regina E. Dugan, Director of DARPA</strong>. It was only three of us — Regina..."</div>
+            </div>
+            <div class="analysis-box">
+              <div class="analysis-title">🔍 Contexto clasificado</div>
+              Boris Nikolic era asesor científico de Bill Gates en la Fundación Bill &amp; Melinda Gates. Organizó una cena de TRES personas con la directora del DARPA — la agencia responsable de las tecnologías militares más avanzadas de EE.UU., incluyendo internet, GPS y drones. Esta reunión no aparece en ningún registro público de la DARPA ni de la Fundación Gates. Epstein era el cuarto nodo invisible.
+            </div>
+          </div>
+          <div class="doc-card">
+            <div class="dc-title">Epstein + Ministro Defensa Israel + Directora DARPA <span class="efta-tag">EFTA·Jul2011</span></div>
+            <div class="dc-date">Jul 26, 2011 · jeevacation@gmail.com</div>
+            <div class="email-raw" style="color:#ff6060;border-color:#ff4040">
+              <div class="raw-from">De: Jeffrey Epstein · A: [staff]</div>
+              <div class="raw-body">"I don't know if regina-darpa is in NY sat... <strong>the Israeli defense minister will be with me</strong>, she might like to see him, he is super well informed"</div>
+            </div>
+            <div class="analysis-box">
+              <div class="analysis-title">🔍 Contexto clasificado</div>
+              Epstein intentando reunir en su mansión de NY a la jefa de DARPA con el ministro de defensa israelí. Si esta reunión se produjo, representaría una transferencia informal de inteligencia tecnológica militar entre EE.UU. e Israel mediada por un ciudadano privado sin ningún cargo gubernamental. Potencialmente ilegal bajo la Arms Export Control Act.
+            </div>
+          </div>
+          <div class="doc-card">
+            <div class="dc-title">Tom Pritzker + "La chica DARPA" — noche en París <span class="efta-tag">EFTA·Jan2012</span></div>
+            <div class="dc-date">Jan 10-11, 2012 · Tom Pritzker → Epstein</div>
+            <div class="email-raw" style="color:#ff6060;border-color:#ff4040">
+              <div class="raw-from">De: Pritzker, Tom · 40+ estrellas en la cadena</div>
+              <div class="raw-body">"<strong>Shit. I'm seeing Darpa lady tonite. Paris.</strong> Sorry for all the typos. Sent from my iPhone"</div>
+            </div>
+            <div class="analysis-box">
+              <div class="analysis-title">🔍 Contexto clasificado</div>
+              Tom Pritzker (heredero Hyatt Hotels, patrimonio ~$40B, expresidente Hyatt Corp) reporta a Epstein un encuentro nocturno con la directora de DARPA en París. El tono casual ("Shit") sugiere que esto era rutinario en su círculo. 40 personas en la cadena de este email. La directora de DARPA (Regina Dugan) abandonó el cargo meses después para unirse a Google en un rol "misterioso" — Boris Nikolic se lo reportó a Epstein con un link: "DARPA director exits agency for Google, assumes mysterious role".
+            </div>
+          </div>
+          <div class="doc-card">
+            <div class="dc-title">DARPA-BTO Polymaths — Joi Ito → Epstein <span class="efta-tag">EFTA·Jun2014</span></div>
+            <div class="dc-date">Jun 8, 2014 · Joi Ito (MIT Media Lab)</div>
+            <div class="email-raw" style="color:#ff6060;border-color:#ff4040">
+              <div class="raw-from">De: Joi Ito · Reenviando: Jonathan Sackner-Bernstein MD</div>
+              <div class="raw-body">Reenviando documentos del programa <strong>DARPA-BTO Polymaths</strong> (Biological Technologies Office) a Jeffrey Epstein. Fecha original: June 4, 2014.</div>
+            </div>
+            <div class="analysis-box">
+              <div class="analysis-title">🔍 Contexto clasificado</div>
+              DARPA-BTO es la Oficina de Tecnologías Biológicas — el brazo de investigación biotecnológica militar de DARPA. Sus programas incluyen mejora cognitiva, interfaces cerebro-computadora militares, y biología sintética para defensa. Joi Ito (director del MIT Media Lab, renunció en 2019 por Epstein) funcionaba como canal entre DARPA y Epstein. Jonathan Sackner-Bernstein es cardiólogo especialista en dispositivos médicos de alta tecnología.
+            </div>
+          </div>
+          <div class="doc-card">
+            <div class="dc-title">Boris Nikolic — Todo un día en reuniones DARPA <span class="efta-tag">EFTA·Nov2011</span></div>
+            <div class="dc-date">Nov 15, 2011 · Boris Nikolic → Epstein</div>
+            <div class="email-raw" style="color:#ff6060;border-color:#ff4040">
+              <div class="raw-from">De: Boris Nikolic · 14 estrellas en la cadena</div>
+              <div class="raw-body">"Whole day at mtgs... <strong>Just done with DARPA mtg — since 8am</strong>. What happened with Mette now?? She wants to carry your kid"</div>
+            </div>
+            <div class="analysis-box">
+              <div class="analysis-title">🔍 Contexto clasificado</div>
+              Nikolic reporta un día entero de reuniones en DARPA y luego hace una referencia altamente perturbadora a una mujer que "wants to carry your kid" refiriéndose a Epstein. Este email mezcla en una sola oración reuniones militares clasificadas y las actividades ilegales de Epstein. Nikolic aparece en el testamento de Epstein firmado dos días antes de su muerte como heredero.
+            </div>
+          </div>
+          <div class="doc-card">
+            <div class="dc-title">DARPA → Hacker del Cult of the Dead Cow → Ciberseguridad <span class="efta-tag">EFTA·Nov2011</span></div>
+            <div class="dc-date">Nov 5, 2011 · Boris Nikolic → Epstein</div>
+            <div class="email-raw" style="color:#ff6060;border-color:#ff4040">
+              <div class="raw-from">De: Boris Nikolic · 6 estrellas</div>
+              <div class="raw-body">"hacking cooperative <strong>The Cult of the Dead Cow</strong>. He is now a program manager at <strong>DARPA</strong> where he will help fund research to defeat cyber attacks."</div>
+            </div>
+            <div class="analysis-box">
+              <div class="analysis-title">🔍 Contexto clasificado</div>
+              Nikolic informa a Epstein que un miembro del grupo hacker "Cult of the Dead Cow" (el colectivo de hackers más antiguo de EE.UU., responsable del concepto de "hacktivismo") fue reclutado como program manager en DARPA para investigación de ciberseguridad. Epstein recibía inteligencia sobre la composición interna de DARPA a través de su red.
+            </div>
+          </div>
+          <div class="doc-card">
+            <div class="dc-title">Epstein busca "oferta DARPA" — Conversación directa <span class="efta-tag">EFTA·Apr2015</span></div>
+            <div class="dc-date">Abr 6 - 27, 2015 · Múltiples correos</div>
+            <div class="email-raw" style="color:#ff6060;border-color:#ff4040">
+              <div class="raw-from">Conversación entre Epstein y contacto [Redacted]</div>
+              <div class="raw-body">"NYC?? Want to talk about <strong>darpa Offer</strong>" // "Might I be able to see you? Want to talk about cool science and <strong>DARPA and HOPKINS</strong>? Will you be in NYC Thursday or Friday morning"</div>
+            </div>
+            <div class="analysis-box">
+              <div class="analysis-title">🔍 Contexto clasificado</div>
+              Conversaciones sobre una "oferta" específica de DARPA que Epstein evaluaba. Johns Hopkins mencionado en el mismo contexto — una de las principales instituciones contratistas del gobierno federal en investigación biomédica y de defensa. El contacto redactado pregunta si Epstein podría recibirle en Nueva York para discutirlo.
+            </div>
+          </div>
+          <div class="doc-card">
+            <div class="dc-title">DARPA — Dispositivo cerebral aumenta aprendizaje 40% <span class="efta-tag">EFTA·Oct2017</span></div>
+            <div class="dc-date">Oct 27, 2017 · Newsletter Futurism en inbox Epstein</div>
+            <div class="email-raw" style="color:#ff6060;border-color:#ff4040">
+              <div class="raw-from">Futurism newsletter (guardado por Epstein)</div>
+              <div class="raw-body">"<strong>DARPA's New Brain Device Increases Learning Speed by 40%</strong>" — artículo guardado en bandeja de Epstein mientras financiaba al mismo tiempo el Penrose Institute sobre consciencia cuántica cerebral.</div>
+            </div>
+            <div class="analysis-box">
+              <div class="analysis-title">🔍 Contexto clasificado</div>
+              Epstein seguía activamente la tecnología cerebral de DARPA (mejora cognitiva militar) mientras simultáneamente financiaba investigación civil sobre consciencia cuántica (Penrose-Hameroff) y tenía acceso a reuniones privadas con la directora del mismo DARPA. La convergencia de estos tres flujos en una sola persona no aparece documentada en ningún análisis público de sus actividades.
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ═══ SECTION 2: LOWELL WOOD ═══ -->
+    <div class="acc-section">
+      <div class="acc-header" onclick="toggleAcc(this)" style="border-color:rgba(255,200,0,0.4)">
+        <div class="acc-icon">⭐</div>
+        <div class="acc-title">
+          <h3 style="color:#ffd700">Lowell Wood — El Arquitecto del Escudo Nuclear de Reagan</h3>
+          <div class="acc-sub">Proyecto Star Wars (SDI) · Briefings presidenciales 1988-1990 · Tecnología cuántica · Lawrence Livermore · 28 correos</div>
+        </div>
+        <span class="acc-badge" style="background:rgba(255,200,0,0.15);color:#ffd700;border:1px solid #ffd700">ALTO SECRETO</span>
+        <span class="acc-arrow">▼</span>
+      </div>
+      <div class="acc-body">
+
+        <div style="background:rgba(255,200,0,0.05);border:1px solid rgba(255,200,0,0.2);border-radius:10px;padding:18px;margin-bottom:18px">
+          <div style="font-size:13px;font-weight:700;color:#ffd700;margin-bottom:10px">¿Quién es Lowell Wood?</div>
+          <p style="font-size:12px;color:var(--muted2);line-height:1.8;margin:0">Lowell Wood es el inventor más prolífico de la historia de EE.UU. — superando a Thomas Edison. Trabajó en el Lawrence Livermore National Laboratory durante décadas bajo la dirección de Edward Teller (el "padre de la bomba H"). Fue el arquitecto principal del programa SDI (Strategic Defense Initiative), conocido como "Star Wars" — el sistema de escudo antimisiles por rayos X y láseres nucleares que Reagan propuso en 1983. Bloomberg publicó en 2015: "How an F Student Became America's Most Prolific Inventor" — artículo enviado directamente al inbox de Epstein.</p>
+        </div>
+
+        <div class="email-raw" style="color:#ffd700;border-color:#ffd700">
+          <div class="raw-from">De: Lowell Wood · A: [Epstein network] · Jul 16, 2011 · Asunto: "A Saturday Evening Historical Footnote" · ⭐3 estrellas</div>
+          <div class="raw-body">"...culminating in my briefings to <strong>President Reagan in 1988</strong> and to <strong>President Bush I in 1990</strong> (during which the memorable '<strong>We ordered you to give Lowell all</strong> [the resources he needed]')..."</div>
+        </div>
+        <div class="analysis-box">
+          <div class="analysis-title">🔍 Análisis</div>
+          Wood escribió este email un sábado por la noche como "nota histórica casual" a la red de Epstein. Describe sus briefings presidenciales clasificados sobre el SDI. El President Bush I ordenó personalmente que se le dieran "todos los recursos" para el proyecto. Este correo circuló en el inner circle de Epstein como si fuera anécdota de sobremesa — el mismo hombre que diseñó el sistema de defensa nuclear más avanzado de la historia enviaba emails nocturnos a un financiero procesado por tráfico sexual.
+        </div>
+
+        <div class="doc-grid" style="margin-top:16px">
+          <div class="doc-card">
+            <div class="dc-title">Quantum-Thermodynamic Ratchet <span class="efta-tag">EFTA·Sep2011</span></div>
+            <div class="dc-date">Sep 4, 2011 · Lowell Wood ↔ Epstein ↔ Bill Gates ↔ Unknown</div>
+            <div class="dc-text">Wood escribe a Epstein sobre un problema de física cuántica extremadamente técnico: convertir energía fotónica a frecuencias superiores con eficiencia máxima. En el correo pregunta si Bill Gates tiene inputs sobre el problema. La cadena incluye a Epstein, Gates, Boris Nikolic y Lowell Wood debatiendo física cuántica avanzada. <em style="color:#ffd700">"Oh Lord. This is a very hard problem — do you have any interesting inputs?"</em></div>
+          </div>
+          <div class="doc-card">
+            <div class="dc-title">Sci-Fi Cities & Sea Cities <span class="efta-tag">EFTA·Aug2011</span></div>
+            <div class="dc-date">Aug 29, 2011 · ⭐17 estrellas · Cadena con 10+ personas</div>
+            <div class="dc-text">Correo con 17 estrellas y 8 personas con información redactada sobre ciudades flotantes en el océano y piratas somalíes. Wood usa el prefijo "S" (por "Scientifically yours") — su firma habitual. Discute la logística económica de comunidades en alta mar. La cadena mezcla planificación de ciudades del futuro con referencias a actividades piratas como "highly-active communities-at-sea".</div>
+          </div>
+          <div class="doc-card">
+            <div class="dc-title">Existential Concerns re Boris <span class="efta-tag">EFTA·Aug2013</span></div>
+            <div class="dc-date">Aug 8, 2013 · Lowell Wood → Boris Nikolic · ⭐6 estrellas</div>
+            <div class="dc-text">Justo cuando Boris Nikolic anunciaba su salida de la Fundación Gates (Sep 2013), Lowell Wood le escribió sobre "preocupaciones existenciales". El correo es referenciado en múltiples cadenas. El contexto: Nikolic acababa de dejar el rol más poderoso de la filantropía global para hacer algo desconocido. El testamento de Epstein lo incluiría meses antes de su muerte.</div>
+          </div>
+          <div class="doc-card">
+            <div class="dc-title">Cena Seattle: Wood + Nikolic + Epstein <span class="efta-tag">EFTA·Jul2011</span></div>
+            <div class="dc-date">Jul 5, 2011 · Organización de cena</div>
+            <div class="dc-text"><em>"Hi to you both. Sam Dryden wanted to have a dinner with <strong>Lowell Wood, Boris</strong>, Me either Sunday 17th or sometime that week. Not sure when JEE will be..."</em> — Sam Dryden organizando cena en Seattle con Wood, Nikolic y Epstein (JEE). Dryden trabajó en DARPA y después en la Fundación Gates en agricultura.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SECTION 3: QUANTUM COMPUTING ═══ -->
+    <div class="acc-section">
+      <div class="acc-header" onclick="toggleAcc(this)" style="border-color:rgba(100,100,255,0.4)">
+        <div class="acc-icon">⚛️</div>
+        <div class="acc-title">
+          <h3 style="color:#a0a0ff">Computación Cuántica — Red Secreta MIT-Epstein</h3>
+          <div class="acc-sub">Seth Lloyd · Revertir el tiempo · China Quantum Superpower · Bitcoin cuántico · Misha Lukin Harvard · 991 correos</div>
+        </div>
+        <span class="acc-badge" style="background:rgba(100,100,255,0.2);color:#a0a0ff;border:1px solid #8080ff">991 CORREOS</span>
+        <span class="acc-arrow">▼</span>
+      </div>
+      <div class="acc-body">
+
+        <div class="email-raw" style="color:#a0a0ff;border-color:#8080ff">
+          <div class="raw-from">De: David Grosof → jeevacation@gmail.com · Mar 14, 2019 · ⭐8 estrellas · DOJ EFTA02631338</div>
+          <div class="raw-body">"This seems quite fundamental. <strong>What do you think of this?</strong><br>https://phys.org/news/2019-03-physicists-reverse-quantum.html<br>Please forgive typos. Sent from Moto X4 phone."</div>
+        </div>
+        <div class="analysis-box">
+          <div class="analysis-title">🔍 Contexto: Físicos Revierten el Tiempo con Computadora Cuántica (2019)</div>
+          Investigadores del Moscow Institute of Physics and Technology publicaron en marzo 2019 que usaron un ordenador cuántico IBM para "revertir el tiempo" — hacer que un sistema cuántico de 2 qubits volviera a un estado anterior en el tiempo. El resultado sugiere que el tiempo podría no ser fundamentalmente irreversible a nivel cuántico. David Grosof lo envía a Epstein (jeevacation) apenas publicado, preguntando su opinión. Epstein recibía papers de física fundamental días después de publicarse.
+        </div>
+
+        <div class="doc-grid" style="margin-top:16px">
+          <div class="doc-card">
+            <div class="dc-title">Seth Lloyd — 1,053 correos con Epstein <span class="efta-tag">EFTA·múltiple</span></div>
+            <div class="dc-date">2010–2019 · MIT Quantum Lab</div>
+            <div class="dc-text">Seth Lloyd (MIT) es uno de los pioneros de la computación cuántica. Epstein le financió un artículo sobre computación cuántica y bacterias de azufre publicado en Scientific American. <em style="color:#a0a0ff">"Seth Lloyd likes the quantum article— see below. I'll incorporate his edits and ask him to put his name on the piece as editor"</em> (Oct 17, 2014). Epstein pagaba, Lloyd firmaba. Reuniones privadas de 3 horas en Harvard y Cambridge regularmente.</div>
+          </div>
+          <div class="doc-card">
+            <div class="dc-title">Seth Lloyd + Bitcoin + Joi Ito <span class="efta-tag">EFTA·May2015</span></div>
+            <div class="dc-date">May 12, 2015 · ⭐13 estrellas</div>
+            <div class="dc-text"><em style="color:#a0a0ff">"Dear Jeffrey, Seconding Joi here. It would be fun to talk."</em> — Seth Lloyd escribiendo a Epstein sobre Bitcoin, secundando a Joi Ito (MIT Media Lab). Los tres discutían criptomonedas en 2015, años antes del gran boom. Joi Ito luego renunció del MIT en 2019 por los vínculos con Epstein. Lloyd recibió $225,000 de la Jeffrey Epstein VI Foundation.</div>
+          </div>
+          <div class="doc-card">
+            <div class="dc-title">China — Convirtiéndose en Superpotencia Cuántica <span class="efta-tag">EFTA·Dec2018</span></div>
+            <div class="dc-date">Dec 23, 2018 · David Stern → Epstein · ⭐1 estrella</div>
+            <div class="dc-text">Stern envía a Epstein: <em>"The Man Turning China Into a Quantum Superpower"</em> (MIT Technology Review). Epstein monitoreaba la carrera cuántica global meses antes de su muerte (Aug 2019). La superioridad cuántica de China representaría la capacidad de romper todos los sistemas criptográficos occidentales.</div>
+          </div>
+          <div class="doc-card">
+            <div class="dc-title">Misha Lukin — Más cerca de la Quantum Computer <span class="efta-tag">EFTA·Oct2017</span></div>
+            <div class="dc-date">Oct 22, 2017 · Masha Drokova → Epstein (3 correos)</div>
+            <div class="dc-text">Masha Drokova (periodista/modelo rusa, conectada a Epstein) envía múltiples mensajes: <em style="color:#a0a0ff">"Many people from quantum physics field say <strong>Misha Lukin is the closest to quantum computer</strong>"</em> — enlazando el simulador cuántico de 51 qubits de Harvard. Mikhail Lukin es co-director del Harvard Quantum Initiative. Drokova hacía de puente entre la élite científica rusa y el círculo de Epstein.</div>
+          </div>
+          <div class="doc-card">
+            <div class="dc-title">Epstein escribe artículos cuánticos él mismo <span class="efta-tag">EFTA·Aug2015</span></div>
+            <div class="dc-date">Aug 7, 2015 · jeffrey E. → Tyler [Redacted]</div>
+            <div class="dc-text"><em style="color:#a0a0ff">"I need to hire a writer, to put in legible form some of the more esoteric work that my foundation is doing. quantum computing, signal..."</em> — Epstein buscaba ghostwriters para sus propias ideas sobre computación cuántica. Su fundación producía contenido científico sobre cuántica que luego circulaba como si fuera de científicos del MIT.</div>
+          </div>
+          <div class="doc-card">
+            <div class="dc-title">Antony Valentini — Funding para Variables Ocultas <span class="efta-tag">EFTA·Jan2014</span></div>
+            <div class="dc-date">Jan 8, 2014 · Antony Valentini → Epstein</div>
+            <div class="dc-text"><em style="color:#a0a0ff">"Dear Mr Epstein, I am writing to enquire if you might be interested in funding research into <strong>hidden variables in quantum mechanics</strong> — the idea that..."</em> ⭐3 estrellas. Variables ocultas es la teoría alternativa a la interpretación de Copenhague — sugiere que la mecánica cuántica está incompleta y hay variables deterministas subyacentes. Valentini busca financiamiento directo de Epstein para teoría cuántica fundamental.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SECTION 4: CONSCIENCIA CUÁNTICA ═══ -->
+    <div class="acc-section">
+      <div class="acc-header" onclick="toggleAcc(this)" style="border-color:rgba(168,85,247,0.4)">
+        <div class="acc-icon">🧠</div>
+        <div class="acc-title">
+          <h3 style="color:#c084fc">Consciencia Cuántica, Telepathy &amp; Penrose Institute</h3>
+          <div class="acc-sub">Sir Roger Penrose · Stuart Hameroff · Deepak Chopra · LSD + Cuántica · Savant Syndrome · Telepathy autista · 43+ correos</div>
+        </div>
+        <span class="acc-badge" style="background:rgba(168,85,247,0.2);color:#c084fc;border:1px solid var(--purple)">PROHIBIDO</span>
+        <span class="acc-arrow">▼</span>
+      </div>
+      <div class="acc-body">
+
+        <div style="background:rgba(168,85,247,0.05);border:1px solid rgba(168,85,247,0.2);border-radius:10px;padding:18px;margin-bottom:18px">
+          <div style="font-size:13px;font-weight:700;color:#c084fc;margin-bottom:10px">La Red de Consciencia de Epstein</div>
+          <p style="font-size:12px;color:var(--muted2);line-height:1.8;margin:0">Epstein financiaba y conectaba a los principales investigadores del mundo en el campo de la consciencia cuántica — la teoría de que la mente surge de procesos cuánticos en el cerebro. Esto incluye al Premio Nobel Roger Penrose, al anestesiólogo Stuart Hameroff (creadores de la teoría Orch-OR), Deepak Chopra, y varios científicos de Google y Harvard. Simultáneamente, mantenía acceso a tecnología cerebral de DARPA y al estudio de telepathy en niños autistas.</p>
+        </div>
+
+        <div class="email-raw" style="color:#c084fc;border-color:var(--purple)">
+          <div class="raw-from">De: Hameroff, Stuart R → Epstein (jeevacation) · May 24, 2017 · ⭐2 estrellas · EFTA01045396</div>
+          <div class="raw-body">"<strong>The Roger Penrose Institute</strong> is being launched at UCSD to develop Sir Roger's ideas regarding <strong>consciousness, non-computable</strong> processes and physics... <em>will probably ask you to fund their Penrose Institute</em>" [nota de Gino Yu a Epstein]</div>
+        </div>
+
+        <div class="email-raw" style="color:#c084fc;border-color:var(--purple);margin-top:12px">
+          <div class="raw-from">De: James Tagg → Epstein · Feb 1, 2017</div>
+          <div class="raw-body">"On the non-profit side, <strong>Roger Penrose has agreed to us founding an institute named after him</strong>... of the conversation we had many months back in Florida."</div>
+        </div>
+
+        <div class="doc-grid" style="margin-top:16px">
+          <div class="doc-card">
+            <div class="dc-title">Deepak Chopra — LSD + Quantum Healing + Platón <span class="efta-tag">EFTA·Jun2018</span></div>
+            <div class="dc-date">Jun 6, 2018 · ⭐26 estrellas · Chopra → Epstein</div>
+            <div class="dc-text">Chopra comparte con Epstein artículo de Psychology Today: <em style="color:#c084fc">"Lunch with Deepak I: LSD, Quantum Healing, and Plato"</em>. 26 estrellas — uno de los emails más marcados de la colección. Los tres (Chopra, Epstein, el entrevistador) discutían LSD como herramienta para explorar la consciencia cuántica mientras Epstein financiaba el Penrose Institute.</div>
+          </div>
+          <div class="doc-card">
+            <div class="dc-title">Savant Syndrome + Telepathy en Niños Autistas <span class="efta-tag">EFTA·Jul2017</span></div>
+            <div class="dc-date">Jul 12-18, 2017 · Deepak Chopra · ⭐70+12 estrellas</div>
+            <div class="dc-text"><em style="color:#c084fc">"Paul, Good to hear from you and your interest in <strong>telepathy in autistic children</strong>. In my recent review of our savant registry, now over <strong>300+ cases</strong>..."</em> — Chopra a Paul (Redacted). Epstein en copia. Existe una discusión científica sobre si algunos savants autistas muestran capacidades de comunicación extrasensorial. Este registro de 300+ casos estaba siendo compartido directamente con Epstein.</div>
+          </div>
+          <div class="doc-card">
+            <div class="dc-title">Quantum AI en Google + D-Wave para probar Orch-OR <span class="efta-tag">EFTA·May2017</span></div>
+            <div class="dc-date">May 24, 2017 · Hameroff → Epstein</div>
+            <div class="dc-text"><em style="color:#c084fc">"Head of <strong>Quantum AI at Google</strong>, and able to test OR in their <strong>D-Wave quantum computer</strong>"</em> — Hameroff informando a Epstein que tenía acceso al D-Wave de Google para probar experimentalmente si la consciencia es cuántica. Hartmut Neven (head of Google Quantum AI) era parte del mismo círculo de conferencias.</div>
+          </div>
+          <div class="doc-card">
+            <div class="dc-title">Conferencia Consciencia 2017 — Penrose + Chomsky + Chopra <span class="efta-tag">EFTA·May-Jun2017</span></div>
+            <div class="dc-date">San Diego, Jun 5-10, 2017</div>
+            <div class="dc-text">Epstein financió/organizó "The Science of Consciousness 2017". Plenary speakers: <strong>Sir Roger Penrose</strong> (Oxford), Noam Chomsky (MIT), Deepak Chopra. Costo confirmado en correos: "$35,000-50,000 solo en ponentes (incluyendo $9,000 de vuelo business class de Penrose desde Londres)". Joscha Bach de Harvard fue el único escéptico: <em>"Their projects are doomed, I think."</em></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SECTION 5: IA + AGI ═══ -->
+    <div class="acc-section">
+      <div class="acc-header" onclick="toggleAcc(this)" style="border-color:rgba(0,212,180,0.4)">
+        <div class="acc-icon">🤖</div>
+        <div class="acc-title">
+          <h3 style="color:var(--teal)">Inteligencia Artificial General — Epstein, Minsky &amp; AGI (2005–2019)</h3>
+          <div class="acc-sub">Marvin Minsky (padre IA) · Ben Goertzel (AGI) · Joscha Bach · Larry Summers · Epstein buscando AGI antes de que fuera mainstream</div>
+        </div>
+        <span class="acc-badge" style="background:rgba(0,212,180,0.15);color:var(--teal);border:1px solid var(--teal)">30 CORREOS</span>
+        <span class="acc-arrow">▼</span>
+      </div>
+      <div class="acc-body">
+
+        <div class="email-raw" style="color:var(--teal);border-color:var(--teal)">
+          <div class="raw-from">De: Marvin Minsky → Tyler [Epstein staff] · May 31, 2011 · Asunto: "Minsky biography / CV"</div>
+          <div class="raw-body">"<strong>M.I.T. Artificial Intelligence Laboratory, 1959–1974</strong> · <strong>Founder, M.I.T. Artificial Intelligence Project</strong>"<br>[Minsky enviando su CV directamente a Epstein para ser "foundation advisor"]</div>
+        </div>
+        <div class="analysis-box">
+          <div class="analysis-title">🔍 Contexto</div>
+          Marvin Minsky — literalmente el padre de la Inteligencia Artificial, cofundador del MIT AI Lab — envió su CV a Epstein para ser asesor de la Jeffrey Epstein VI Foundation. Epstein era el principal financiador no gubernamental de investigación en IA durante los años 2005–2015, décadas antes de que el tema se volviera mainstream. La nota que Epstein envió a Leon Black: <em>"this guy is the father of artificial intelligence... you could adopt the whole..."</em>
+        </div>
+
+        <div class="doc-grid" style="margin-top:16px">
+          <div class="doc-card">
+            <div class="dc-title">Ben Goertzel — AGI y "Virtual Pets" como primer paso <span class="efta-tag">EFTA·Apr2008</span></div>
+            <div class="dc-date">Apr 2008 · ⭐25-33 estrellas por correo · Múltiples cadenas</div>
+            <div class="dc-text"><em style="color:var(--teal)">"the philosophy underlying the 'virtual pets' as a first step toward <strong>powerful artificial general intelligence</strong> are outlined in this blog post..."</em> — Ben Goertzel (creador de OpenCog, hoy líder en AGI) propone a Epstein financiar el camino hacia AGI usando primero mascotas virtuales. J. Epstein: <em>"article on this theme in Artificial Intelligence journal... I thought it was an interesting sign of change that this prestigious mainstream journal..."</em></div>
+          </div>
+          <div class="doc-card">
+            <div class="dc-title">Epstein + Larry Summers: discutiendo nomenclatura AGI <span class="efta-tag">EFTA·May2016</span></div>
+            <div class="dc-date">May 1, 2016 · jeffrey E. → LHS (Larry Summers) · ⭐22 estrellas</div>
+            <div class="dc-text"><em style="color:var(--teal)">"the artificial intelligence world has searched for new titles for the past few years. <strong>artificial general intelligence. synthetic intelligence. bio inspired intelligence</strong>"</em> — Epstein y Larry Summers (exsecretario del Tesoro, expresidente de Harvard) debatiendo qué nombre usar para la IA fuerte. 1 año después, el término AGI sería adoptado universalmente.</div>
+          </div>
+          <div class="doc-card">
+            <div class="dc-title">Ed Boyden — Optogenetics · "Ganará el Nobel" <span class="efta-tag">EFTA·Jan2013</span></div>
+            <div class="dc-date">Jan 17, 2013 · Ben Goertzel → Epstein · ⭐27 estrellas</div>
+            <div class="dc-text">Goertzel recomienda a Epstein personas interesantes para conocer: <em style="color:var(--teal)">"Dr. Ed Boyden — Will probably win the Nobel Prize for optogenetics. Lots of other..."</em> — Ed Boyden (MIT) inventó la optogenética, técnica que usa luz para controlar neuronas con precisión genética. Es la tecnología base de los interfaces cerebrales modernos. Epstein financiaba estas redes de contacto antes de que existiera Neuralink.</div>
+          </div>
+          <div class="doc-card">
+            <div class="dc-title">Joscha Bach — Seminar on Future of AI at MIT Media Lab <span class="efta-tag">EFTA·Aug2015</span></div>
+            <div class="dc-date">Aug 23, 2015 · Joscha Bach → Epstein</div>
+            <div class="dc-text"><em style="color:var(--teal)">"Last but not least, I will teach a seminar on the <strong>Future of Artificial Intelligence at the Media Lab</strong>"</em> — Joscha Bach (Harvard/MIT) informa a Epstein de su nuevo seminario. Bach es hoy uno de los pensadores más importantes sobre IA consciente y la naturaleza computacional de la realidad. Epstein era su mecenas invisible.</div>
+          </div>
+          <div class="doc-card">
+            <div class="dc-title">Neuralink en inbox de Epstein — 3 veces <span class="efta-tag">EFTA·2017</span></div>
+            <div class="dc-date">Mar-Abr 2017 · CNBC Morning Squawk newsletters</div>
+            <div class="dc-text">El lanzamiento de Neuralink (Mar 2017) aparece en el inbox de Epstein tres veces vía newsletters de CNBC: <em style="color:var(--teal)">"Musk has founded another company, Neuralink, aimed at developing a 'neural lace'"</em>. Epstein recibía estas alertas mientras ya tenía acceso a Ed Boyden (optogenética) y Penrose-Hameroff (consciencia cuántica) — la base científica de Neuralink ya pasaba por su red.</div>
+          </div>
+          <div class="doc-card">
+            <div class="dc-title">Demis Hassabis en EDGE London — Epstein invitado <span class="efta-tag">EFTA·Feb2016</span></div>
+            <div class="dc-date">Feb 21-22, 2016 · John Brockman → Epstein</div>
+            <div class="dc-text">John Brockman (el agente literario más poderoso de la ciencia) invita a Epstein a un evento privado EDGE en Londres con Demis Hassabis (fundador de DeepMind, hoy división de IA de Google). Mismo correo menciona Ed Boyden en optogenética. Epstein tenía acceso presencial al creador de AlphaGo años antes de que el mundo conociera DeepMind.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SECTION 6: GENÉTICA + BIOTECH ═══ -->
+    <div class="acc-section">
+      <div class="acc-header" onclick="toggleAcc(this)" style="border-color:rgba(50,200,100,0.4)">
+        <div class="acc-icon">🧬</div>
+        <div class="acc-title">
+          <h3 style="color:#4ade80">CRISPR, George Church &amp; Células Madre — Biotech Clasificado</h3>
+          <div class="acc-sub">CRISPR gene drive · Martin Nowak · $200K a George Church · Xenotrasplante · Células madre de grasa · Sangre joven</div>
+        </div>
+        <span class="acc-badge" style="background:rgba(50,200,100,0.15);color:#4ade80;border:1px solid #22c55e">EXPERIMENTAL</span>
+        <span class="acc-arrow">▼</span>
+      </div>
+      <div class="acc-body">
+
+        <div class="email-raw" style="color:#4ade80;border-color:#22c55e">
+          <div class="raw-from">De: george church → jeevacation@gmail.com · Sep 6, 2014 · ⭐11 estrellas · Asunto: "Re: $200K"</div>
+          <div class="raw-body">"Each such DNA variant can be used to design and manufacture variant-specific <strong>RNAi molecules, proteins, and CRISPR guide-RNAs</strong>. The CRISPR is used for..."</div>
+        </div>
+        <div class="analysis-box">
+          <div class="analysis-title">🔍 Contexto: $200,000 de Epstein a George Church para CRISPR</div>
+          George Church (Harvard) es el genetista más influyente del mundo — pionero del genoma humano, creador de técnicas CRISPR avanzadas, y hoy trabaja en revivir el mamut. Epstein le pagó $200,000 directamente (2014) para investigación con CRISPR. Church luego fue uno de los científicos que se disculpó públicamente por mantener relación con Epstein después de 2008. El correo de aceptación detalla el uso de CRISPR guide-RNAs — la tecnología de edición genética más precisa existente.
+        </div>
+
+        <div class="doc-grid" style="margin-top:16px">
+          <div class="doc-card">
+            <div class="dc-title">Martin Nowak — CRISPR Gene Drive inducido por Epstein <span class="efta-tag">EFTA·Apr2017</span></div>
+            <div class="dc-date">Apr 6, 2017 · Nowak, Martin A. → Epstein</div>
+            <div class="dc-text"><em style="color:#4ade80">"great new paper out today on how to use <strong>CRISPR gene drive technology in natural populations</strong> — the collaboration with george church <strong>was induced by you</strong>"</em> — Martin Nowak (Harvard Mathematics of Evolution) confirma a Epstein que su colaboración con Church en gene drive existía gracias a Epstein. Gene drive es la tecnología para propagar genes modificados en poblaciones salvajes — potencialmente capaz de modificar o extinguir especies enteras.</div>
+          </div>
+          <div class="doc-card">
+            <div class="dc-title">Peter Thiel: Rejuvenation + Quantum Computing <span class="efta-tag">EFTA·Jan2019</span></div>
+            <div class="dc-date">Jan 24, 2019 · ⭐108 estrellas en la cadena</div>
+            <div class="dc-text"><em style="color:#4ade80">"What are you seeing that's exciting... <strong>rejuvenation? plant biology? quantum computing?</strong>"</em> — Peter Thiel pidiendo a Epstein las últimas novedades en anti-envejecimiento y cuántica. 108 personas con acceso a esta cadena de email. Thiel es conocido por sus inversiones en Ambrosia (transfusiones de plasma joven). Epstein era su fuente de inteligencia científica de frontera.</div>
+          </div>
+          <div class="doc-card">
+            <div class="dc-title">Sangre Joven en Ratones — "Neat" <span class="efta-tag">EFTA·Sep2011</span></div>
+            <div class="dc-date">Sep 2, 2011 · Unknown → Epstein</div>
+            <div class="dc-text"><em style="color:#4ade80">"neat"</em> — alguien envía a Epstein con un solo comentario: "neat" el paper de PopSci sobre inyectar sangre de ratón joven en ratones viejos y obtener efecto de rejuvenecimiento. Epstein lo archivó. Esto es el mismo fenómeno que Thiel financiaría en Ambrosia. Epstein lo seguía 8 años antes del escándalo de "vampirismo" tecnológico.</div>
+          </div>
+          <div class="doc-card">
+            <div class="dc-title">Xenotrasplante + DARPA — "Health DARPA" <span class="efta-tag">EFTA·Oct2017</span></div>
+            <div class="dc-date">Oct 29, 2017 · jeffrey E. → [Redacted]</div>
+            <div class="dc-text"><em style="color:#4ade80">"next step is human trial and create IP around a <strong>xeno transplant gel</strong>... Could try to ask DARPA for some money but..."</em> — Propuesta de trasplante de tejidos entre especies en humanos. Epstein consideraba pedir a DARPA financiamiento para ensayos humanos de xenotrasplante. El "gel" era probablemente un scaffold biológico para aceptación de tejido animal en cuerpo humano.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SECTION 7: PIEL ELECTRÓNICA ═══ -->
+    <div class="acc-section">
+      <div class="acc-header" onclick="toggleAcc(this)" style="border-color:rgba(0,212,180,0.35)">
+        <div class="acc-icon">🩻</div>
+        <div class="acc-title">
+          <h3 style="color:var(--teal)">Piel Electrónica — Epstein, Bill Gates, Boris Nikolic, Lowell Wood</h3>
+          <div class="acc-sub">Electronic Second Skin · Sensores biomédicos · Enviado a Gates en 2011 · Precursor de Neuralink y Apple Watch</div>
+        </div>
+        <span class="acc-badge" style="background:rgba(0,212,180,0.15);color:var(--teal);border:1px solid var(--teal)">VIGILANCIA</span>
+        <span class="acc-arrow">▼</span>
+      </div>
+      <div class="acc-body">
+        <div class="email-raw" style="color:var(--teal);border-color:var(--teal)">
+          <div class="raw-from">De: [Epstein] → Bill Gates · CC: Boris Nikolic (BGC3), Lowell Wood · Aug 15, 2011 · ⭐7 estrellas · EFTA multiple</div>
+          <div class="raw-body">Asunto: "<strong>FW: Epidermal Electronics and Electronic Second Skin</strong>"<br><br>"The authors acknowledge medical applications but they seem most interested in making this into <strong>game controllers</strong> 😊" — Epstein enviando a Bill Gates (con copia a Nikolic y Wood) un paper de Science (2011) sobre sensores electrónicos que se adhieren a la piel como tatuajes temporales.</div>
+        </div>
+        <div class="analysis-box">
+          <div class="analysis-title">🔍 Contexto completo</div>
+          <p style="font-size:12px;color:var(--muted2);line-height:1.8;margin:0">El paper de Science (2011) "Epidermal Electronics" de John A. Rogers (UIUC) describía sensores electrónicos ultra-delgados que se adhieren a la piel humana y pueden: monitorear electroencefalogramas, electrocardiogramas, temperatura corporal, y transmitir datos inalámbricamente. Epstein envió este paper a Bill Gates, Boris Nikolic y Lowell Wood en agosto 2011 con un tono despreocupado.</p>
+          <p style="font-size:12px;color:var(--muted2);line-height:1.8;margin:10px 0 0">Esta tecnología es el antecedente directo de: Apple Watch (ECG), Neuralink (interfaz cerebral), y los parches de monitoreo continuo de glucosa. Epstein actuaba como curador de tecnología biomédica de frontera para los hombres más poderosos del mundo, 10 años antes de que llegara al mercado de consumo.</p>
+          <p style="font-size:12px;color:var(--muted2);line-height:1.8;margin:10px 0 0">Bill Gates respondió (Epstein anota que esperaría a que Boris volviera para su evaluación). La Fundación Gates luego financiaría tecnología de sensores biométricos para salud global. Coincidencia o no — el pipeline de innovación pasó primero por la bandeja de entrada de Epstein.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SECTION 8: UFO / PHENOMENOS ═══ -->
+    <div class="acc-section">
+      <div class="acc-header" onclick="toggleAcc(this)" style="border-color:rgba(168,85,247,0.35)">
+        <div class="acc-icon">👽</div>
+        <div class="acc-title">
+          <h3 style="color:#c084fc">UFOs, Fenómenos No-Locales &amp; Lo Inexplicable</h3>
+          <div class="acc-sub">Deepak Chopra ESP/UFOs · Savant telepathy registry · Non-local mind · Pilotos de la Marina · 69+ correos</div>
+        </div>
+        <span class="acc-badge" style="background:rgba(168,85,247,0.2);color:#c084fc;border:1px solid var(--purple)">69 CORREOS</span>
+        <span class="acc-arrow">▼</span>
+      </div>
+      <div class="acc-body">
+
+        <div class="email-raw" style="color:#c084fc;border-color:var(--purple)">
+          <div class="raw-from">De: Deepak Chopra → Epstein · Jul 18, 2017 · ⭐70 estrellas · Asunto: "RE: Savant syndrome and nonlocal mind"</div>
+          <div class="raw-body">"all of us. We have all had some ESP/telepathy experiences but tend to dismiss them as <strong>UFO's and all the skepticism that accompanies them</strong>. Time for..."<br><br>"Paul, Good to hear from you and your interest in <strong>telepathy in autistic children</strong>. In my recent review of our <strong>savant registry, now over 300+ cases</strong>..."</div>
+        </div>
+        <div class="analysis-box">
+          <div class="analysis-title">🔍 Contexto: 70 estrellas — uno de los correos más marcados del archivo</div>
+          Chopra argumenta que experiencias de ESP (percepción extrasensorial) y telepathy son tan frecuentes que deberían tratarse como fenómenos reales estudiables, no como "UFOs" marginales. El registro de más de 300 casos de savants con posibles capacidades telepáticas estaba siendo discutido directamente con Epstein. El correo tiene 70 estrellas — señal de que muchas personas en la red lo marcaron como especialmente importante. La investigadora Diane Powell MD había presentado casos documentados de niños autistas que parecían comunicar información sin transmisión sensorial conocida.
+        </div>
+
+        <div class="doc-grid" style="margin-top:16px">
+          <div class="doc-card">
+            <div class="dc-title">Pilotos de la Marina + UFOs en Washington Post <span class="efta-tag">EFTA·Apr2019</span></div>
+            <div class="dc-date">Apr 25, 2019 · Washington Post newsletter → inbox Epstein</div>
+            <div class="dc-text"><em style="color:#c084fc">"angry pilots got the Navy to stop dismissing UFO sightings"</em> — artículo del Washington Post en el inbox de Epstein en abril 2019 sobre pilotos de la Marina que forzaron al Pentágono a tomar en serio los avistamientos. Epstein archivó esto 4 meses antes de su muerte.</div>
+          </div>
+          <div class="doc-card">
+            <div class="dc-title">Epstein + proyecto de inversión "UFO" (la película) <span class="efta-tag">EFTA·Nov-Dec2009</span></div>
+            <div class="dc-date">Nov–Dic 2009 · Robert Evans, Henri Kessler, Epstein</div>
+            <div class="dc-text">Epstein negoció convertirse en executive producer de la película "UFO" basada en la serie britànica de los 70s. Henri Kessler (Paramount) organizó llamadas con Robert Evans (legendario productor de Chinatown, El Padrino). Epstein quería los derechos IP de "UFO" y decidió si invertir.</div>
+          </div>
+          <div class="doc-card">
+            <div class="dc-title">Quantum Entanglement + Spooky Interactions <span class="efta-tag">EFTA·2011-2015</span></div>
+            <div class="dc-date">Múltiples · ⭐ 5+ estrellas</div>
+            <div class="dc-text">Epstein archivó múltiples artículos de Science y NYT sobre quantum entanglement: <em style="color:#c084fc">"Quantum Theory Experiment Said to Prove 'Spooky' Interactions"</em> (NYT 2015, ⭐5). El entrelazamiento cuántico — donde dos partículas comparten estado al instante sin importar distancia — era de especial interés para Epstein como posible mecanismo de comunicación no-local.</div>
+          </div>
+          <div class="doc-card">
+            <div class="dc-title">Quantum Healing con LSD — Profiling Chopra <span class="efta-tag">EFTA·Jun2018</span></div>
+            <div class="dc-date">Jun 6, 2018 · ⭐26 estrellas</div>
+            <div class="dc-text">El artículo de Psychology Today sobre almuerzo con Deepak Chopra: <em style="color:#c084fc">"LSD, Quantum Healing, and Plato"</em> — compartido por Chopra a Epstein con 26 estrellas en la cadena. LSD como herramienta de expansión de consciencia cuántica. Chopra, Epstein y este círculo operaban en la intersección de psicodélicos, cuántica y espiritualidad — antes de que el "psychedelic renaissance" fuera mainstream.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONCLUSIÓN -->
+    <div style="background:linear-gradient(135deg,rgba(255,0,64,0.08),rgba(168,85,247,0.08));border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:24px;margin-top:24px;text-align:center">
+      <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#ff4060;margin-bottom:12px">🕵️ Epstein como Operador de Inteligencia Científica</div>
+      <p style="font-size:12px;color:var(--muted2);max-width:800px;margin:0 auto;line-height:1.9">Los 1,038,603 correos revelan a Epstein no como un financiero, sino como un <strong style="color:#fff">nodo de inteligencia tecnológica</strong>: conectaba la directora de DARPA con ministros de defensa extranjeros (sin protocolo), financiaba papers del MIT para publicarlos bajo nombres ajenos, actuaba como distribuidor de ciencia de frontera para billonarios (Gates, Thiel, Pritzker), y mantenía acceso simultáneo a tecnología militar clasificada (Lowell Wood / SDI), biotecnología de vanguardia (Church / CRISPR), computación cuántica (Lloyd / MIT) y fenomenología de la consciencia (Penrose / Hameroff). Todo esto operando en paralelo a sus actividades criminales, sin cargo oficial alguno.</p>
+    </div>
+
+    <script>
+    function toggleAcc(header) {
+      header.classList.toggle('open');
+      const body = header.nextElementSibling;
+      body.classList.toggle('open');
+    }
+    </script>
+
+  </div>
+
+  <!-- ═══ PAGE: TECHFLOW ═══ -->
+  <div id="page-techflow" class="page">
+
+    <div style="text-align:center;margin-bottom:28px">
+      <div style="font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--teal);margin-bottom:8px">🔬 Red Tecnológica Epstein — Diagrama de Flujo</div>
+      <p style="color:var(--muted2);font-size:13px">Todas las tecnologías documentadas en jmail.world · Cómo fluyó el conocimiento clasificado</p>
+    </div>
+
+    <style>
+    .flow-container { position:relative;overflow:hidden; }
+    .flow-layer {
+      display:flex;gap:12px;justify-content:center;flex-wrap:wrap;
+      margin-bottom:0;padding:20px 0;position:relative;
+    }
+    .flow-layer::after {
+      content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);
+      width:2px;height:20px;background:linear-gradient(rgba(255,255,255,0.2),transparent);
+    }
+    .flow-node {
+      background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.1);
+      border-radius:12px;padding:14px 18px;text-align:center;
+      min-width:140px;max-width:180px;position:relative;cursor:pointer;
+      transition:all 0.2s;
+    }
+    .flow-node:hover { transform:translateY(-3px);border-color:rgba(255,255,255,0.3); }
+    .flow-node .fn-icon { font-size:28px;margin-bottom:6px; }
+    .flow-node .fn-name { font-size:12px;font-weight:700;color:#fff;margin-bottom:3px; }
+    .flow-node .fn-role { font-size:10px;color:var(--muted2);line-height:1.5; }
+    .flow-node .fn-emails { font-size:9px;font-family:'IBM Plex Mono',monospace;margin-top:6px;opacity:0.6; }
+    .flow-arrow {
+      display:flex;align-items:center;justify-content:center;
+      font-size:28px;color:rgba(255,255,255,0.15);padding:4px 0;
+    }
+    .flow-center {
+      background:linear-gradient(135deg,rgba(255,0,64,0.2),rgba(168,85,247,0.2));
+      border:2px solid rgba(255,0,64,0.5);border-radius:20px;
+      padding:20px 30px;text-align:center;margin:0 auto 4px;
+      max-width:280px;
+    }
+    .flow-section-label {
+      text-align:center;font-family:'IBM Plex Mono',monospace;font-size:10px;
+      text-transform:uppercase;letter-spacing:3px;color:var(--muted2);
+      margin:16px 0 8px;
+    }
+    .tech-flow-grid {
+      display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:16px 0;
+    }
+    .tf-card {
+      border-radius:10px;padding:14px;border:1px solid rgba(255,255,255,0.08);
+      background:rgba(0,0,0,0.3);
+    }
+    .tf-card .tf-icon { font-size:22px;margin-bottom:6px; }
+    .tf-card .tf-title { font-size:11px;font-weight:700;color:#fff;margin-bottom:4px; }
+    .tf-card .tf-from { font-size:10px;color:var(--muted2);margin-bottom:6px; }
+    .tf-card .tf-tech { font-size:10px;color:var(--muted2);line-height:1.6; }
+    .tf-card .tf-year { font-size:9px;font-family:'IBM Plex Mono',monospace;opacity:0.5;margin-top:6px; }
+    .connector-h {
+      display:flex;align-items:center;gap:0;margin:8px 0;
+    }
+    .conn-line { flex:1;height:1px;background:rgba(255,255,255,0.1); }
+    .conn-dot { width:8px;height:8px;border-radius:50%;flex-shrink:0; }
+    </style>
+
+    <!-- DIAGRAMA DE FLUJO SVG INTERACTIVO -->
+    <div style="background:rgba(0,0,0,0.3);border:1px solid var(--border2);border-radius:16px;padding:28px;margin-bottom:24px">
+
+      <!-- NIVEL 0: FUENTES DE CONOCIMIENTO CLASIFICADO -->
+      <div class="flow-section-label">NIVEL 1 — Fuentes de Conocimiento Clasificado / Acceso Restringido</div>
+      <div class="flow-layer">
+        <div class="flow-node" style="border-color:rgba(255,50,50,0.4)">
+          <div class="fn-icon">🏛️</div>
+          <div class="fn-name" style="color:#ff6060">DARPA</div>
+          <div class="fn-role">Defense Advanced Research Projects Agency<br>Directora Regina Dugan</div>
+          <div class="fn-emails">155 correos · Múltiples canales</div>
+        </div>
+        <div class="flow-node" style="border-color:rgba(255,200,0,0.4)">
+          <div class="fn-icon">⭐</div>
+          <div class="fn-name" style="color:#ffd700">Lowell Wood</div>
+          <div class="fn-role">Lawrence Livermore NL<br>SDI / Star Wars Program</div>
+          <div class="fn-emails">28 correos · Briefings Reagan/Bush</div>
+        </div>
+        <div class="flow-node" style="border-color:rgba(100,100,255,0.4)">
+          <div class="fn-icon">⚛️</div>
+          <div class="fn-name" style="color:#a0a0ff">MIT Quantum Lab</div>
+          <div class="fn-role">Seth Lloyd · Misha Lukin<br>IBM D-Wave · 51 qubits</div>
+          <div class="fn-emails">991 correos · Artículos financiados</div>
+        </div>
+        <div class="flow-node" style="border-color:rgba(50,200,100,0.4)">
+          <div class="fn-icon">🧬</div>
+          <div class="fn-name" style="color:#4ade80">Harvard Genetics</div>
+          <div class="fn-role">George Church · Martin Nowak<br>CRISPR · Gene Drive</div>
+          <div class="fn-emails">$200K · Gene drive inducido</div>
+        </div>
+        <div class="flow-node" style="border-color:rgba(168,85,247,0.4)">
+          <div class="fn-icon">🧠</div>
+          <div class="fn-name" style="color:#c084fc">Penrose Institute</div>
+          <div class="fn-role">Roger Penrose · Hameroff<br>Orch-OR · Quantum Mind</div>
+          <div class="fn-emails">43 correos · $50K conferencia</div>
+        </div>
+        <div class="flow-node" style="border-color:rgba(0,212,180,0.4)">
+          <div class="fn-icon">🤖</div>
+          <div class="fn-name" style="color:var(--teal)">MIT Media Lab / AI</div>
+          <div class="fn-role">Marvin Minsky · Joscha Bach<br>Ben Goertzel · Joi Ito</div>
+          <div class="fn-emails">30+ correos · AGI funding</div>
+        </div>
+      </div>
+
+      <div class="flow-arrow">▼▼▼</div>
+
+      <!-- NIVEL 1: BROKERS -->
+      <div class="flow-section-label">NIVEL 2 — Brokers / Intermediarios (Red Epstein)</div>
+      <div class="flow-layer">
+        <div class="flow-node" style="border-color:rgba(255,100,0,0.4)">
+          <div class="fn-icon">🔬</div>
+          <div class="fn-name" style="color:#ff9040">Boris Nikolic</div>
+          <div class="fn-role">Asesor Científico Gates<br>bgC3 · Heredero testamento</div>
+          <div class="fn-emails">DARPA meetings · Epstein pipeline</div>
+        </div>
+        <div class="flow-node" style="border-color:rgba(100,200,255,0.4)">
+          <div class="fn-icon">📚</div>
+          <div class="fn-name" style="color:#67e8f9">Joi Ito</div>
+          <div class="fn-role">Director MIT Media Lab<br>Renunció 2019 por Epstein</div>
+          <div class="fn-emails">DARPA-BTO · Bitcoin · AI</div>
+        </div>
+        <div class="flow-node" style="border-color:rgba(255,150,255,0.4)">
+          <div class="fn-icon">🌊</div>
+          <div class="fn-name" style="color:#f0abfc">Deepak Chopra</div>
+          <div class="fn-role">Quantum Healing · LSD<br>Savant Telepathy Registry</div>
+          <div class="fn-emails">70+ estrellas por correo</div>
+        </div>
+        <div class="flow-node" style="border-color:rgba(200,200,100,0.4)">
+          <div class="fn-icon">📡</div>
+          <div class="fn-name" style="color:#fde68a">John Brockman</div>
+          <div class="fn-role">Agente literario ciencia<br>EDGE Foundation · eventos</div>
+          <div class="fn-emails">DeepMind · Boyden · EDGE London</div>
+        </div>
+      </div>
+
+      <div class="flow-arrow">▼▼▼</div>
+
+      <!-- NIVEL 2: JEFFREY EPSTEIN -->
+      <div class="flow-section-label">NIVEL 3 — Nodo Central</div>
+      <div style="display:flex;justify-content:center;margin:8px 0">
+        <div class="flow-center">
+          <div style="font-size:36px;margin-bottom:8px">🕳️</div>
+          <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:#ff4060">JEFFREY EPSTEIN</div>
+          <div style="font-size:10px;color:var(--muted2);margin-top:4px">jeevacation@gmail.com<br>1,038,603 correos · Jeffrey Epstein VI Foundation</div>
+        </div>
+      </div>
+
+      <div class="flow-arrow">▼▼▼</div>
+
+      <!-- NIVEL 3: RECEPTORES -->
+      <div class="flow-section-label">NIVEL 4 — Receptores de Inteligencia Tecnológica Clasificada</div>
+      <div class="flow-layer">
+        <div class="flow-node" style="border-color:rgba(0,150,255,0.4)">
+          <div class="fn-icon">💻</div>
+          <div class="fn-name" style="color:#60a5fa">Bill Gates</div>
+          <div class="fn-role">Fundación B&amp;M Gates<br>Piel electrónica · Biotech</div>
+          <div class="fn-emails">Epidermal Electronics 2011</div>
+        </div>
+        <div class="flow-node" style="border-color:rgba(200,100,0,0.4)">
+          <div class="fn-icon">🧛</div>
+          <div class="fn-name" style="color:#fb923c">Peter Thiel</div>
+          <div class="fn-role">PayPal · Palantir<br>Sangre joven · Rejuvenation</div>
+          <div class="fn-emails">108 estrellas · Quantum + Bio</div>
+        </div>
+        <div class="flow-node" style="border-color:rgba(100,200,255,0.4)">
+          <div class="fn-icon">🏨</div>
+          <div class="fn-name" style="color:#67e8f9">Tom Pritzker</div>
+          <div class="fn-role">Hyatt Hotels · $40B<br>"DARPA lady" en París</div>
+          <div class="fn-emails">40 en cadena · Reuniones DARPA</div>
+        </div>
+        <div class="flow-node" style="border-color:rgba(255,50,200,0.4)">
+          <div class="fn-icon">📊</div>
+          <div class="fn-name" style="color:#f472b6">Larry Summers</div>
+          <div class="fn-role">Exsecretario del Tesoro<br>ExPresidente Harvard</div>
+          <div class="fn-emails">Discutiendo AGI con Epstein</div>
+        </div>
+        <div class="flow-node" style="border-color:rgba(100,255,100,0.4)">
+          <div class="fn-icon">🇮🇱</div>
+          <div class="fn-name" style="color:#86efac">Min. Defensa Israel</div>
+          <div class="fn-role">Intento reunión con DARPA<br>Sin registro oficial</div>
+          <div class="fn-emails">Jul 2011 · Potencialmente ilegal</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- TABLA DE TECNOLOGÍAS -->
+    <div class="sh"><h2 style="font-size:20px">📊 Tecnologías Documentadas — Cronología jmail.world</h2></div>
+    <div class="tech-flow-grid" style="margin-bottom:28px">
+      <div class="tf-card" style="border-color:rgba(255,50,50,0.3)">
+        <div class="tf-icon">🏛️</div>
+        <div class="tf-title">Tecnología Militar (DARPA)</div>
+        <div class="tf-from">Fuente: Regina Dugan, Boris Nikolic</div>
+        <div class="tf-tech">• Escudo antimisiles SDI (Lowell Wood)<br>• Dispositivo cerebral +40% aprendizaje<br>• DARPA-BTO: Biotech militar<br>• Ciberseguridad (Cult Dead Cow)<br>• Xenotrasplante para ensayos humanos</div>
+        <div class="tf-year">2010–2017</div>
+      </div>
+      <div class="tf-card" style="border-color:rgba(100,100,255,0.3)">
+        <div class="tf-icon">⚛️</div>
+        <div class="tf-title">Computación Cuántica</div>
+        <div class="tf-from">Fuente: Seth Lloyd, Misha Lukin</div>
+        <div class="tf-tech">• Reversión del tiempo cuántico (2019)<br>• Quántum + fotosíntesis en bacterias<br>• China → Superpotencia cuántica<br>• Variables ocultas en QM<br>• Bitcoin + Seth Lloyd + Joi Ito</div>
+        <div class="tf-year">2008–2019</div>
+      </div>
+      <div class="tf-card" style="border-color:rgba(168,85,247,0.3)">
+        <div class="tf-icon">🧠</div>
+        <div class="tf-title">Consciencia Cuántica</div>
+        <div class="tf-from">Fuente: Penrose, Hameroff, Chopra</div>
+        <div class="tf-tech">• Teoría Orch-OR (microtúbulos)<br>• Google D-Wave para probar QM mind<br>• Penrose Institute UCSD<br>• LSD + Quantum Healing<br>• Telepathy en savants autistas (300+)</div>
+        <div class="tf-year">2011–2018</div>
+      </div>
+      <div class="tf-card" style="border-color:rgba(50,200,100,0.3)">
+        <div class="tf-icon">🧬</div>
+        <div class="tf-title">Biotecnología / Genética</div>
+        <div class="tf-from">Fuente: Church, Nowak, Victor</div>
+        <div class="tf-tech">• CRISPR guide-RNAs ($200K a Church)<br>• Gene drive en poblaciones salvajes<br>• Células madre de grasa (200 clínicas)<br>• Sangre joven → rejuvenecimiento<br>• Xenotrasplante gel · DARPA funding</div>
+        <div class="tf-year">2009–2017</div>
+      </div>
+      <div class="tf-card" style="border-color:rgba(0,212,180,0.3)">
+        <div class="tf-icon">🤖</div>
+        <div class="tf-title">Inteligencia Artificial</div>
+        <div class="tf-from">Fuente: Minsky, Bach, Goertzel</div>
+        <div class="tf-tech">• AGI roadmap (Goertzel 2008)<br>• Marvin Minsky → Foundation Advisor<br>• Joscha Bach → MIT AI seminar<br>• Demis Hassabis (DeepMind) → EDGE<br>• Neuralink en inbox 2017</div>
+        <div class="tf-year">2005–2019</div>
+      </div>
+      <div class="tf-card" style="border-color:rgba(0,150,255,0.3)">
+        <div class="tf-icon">🩻</div>
+        <div class="tf-title">Bioelectrónica / Cyborg Tech</div>
+        <div class="tf-from">Fuente: Wood, Nikolic, Boyden</div>
+        <div class="tf-tech">• Piel electrónica (→ Gates 2011)<br>• Optogenética (Ed Boyden, Nobel?)<br>• Quantum-Thermodynamic Energy<br>• Quantum dots en redes neuronales<br>• Electronic Second Skin → Apple Watch</div>
+        <div class="tf-year">2011–2017</div>
+      </div>
+      <div class="tf-card" style="border-color:rgba(255,200,0,0.3)">
+        <div class="tf-icon">🔭</div>
+        <div class="tf-title">Física de Frontera</div>
+        <div class="tf-from">Fuente: Smolin, Rovelli, Valentini</div>
+        <div class="tf-tech">• Gravity Cuántica (Carlo Rovelli)<br>• Nuevos fundamentos QM (Lee Smolin)<br>• Variables ocultas en QM<br>• Quantum Gravity + espacio-tiempo<br>• Partículas "spooky" — entanglement</div>
+        <div class="tf-year">2011–2018</div>
+      </div>
+      <div class="tf-card" style="border-color:rgba(255,100,100,0.3)">
+        <div class="tf-icon">💉</div>
+        <div class="tf-title">Anti-Envejecimiento</div>
+        <div class="tf-from">Fuente: Thiel, Victor, MedStem</div>
+        <div class="tf-tech">• Sangre joven en ratones (PopSci 2011)<br>• MedStem: células madre de grasa<br>• 200 clínicas LaserSculpt (stem cells)<br>• Thiel: "rejuvenation?" → Epstein 2019<br>• Xenotrasplante como extensión de vida</div>
+        <div class="tf-year">2009–2019</div>
+      </div>
+    </div>
+
+    <!-- TIMELINE TECNOLÓGICO -->
+    <div class="sh"><h2 style="font-size:20px">📅 Línea de Tiempo — Cuándo Epstein Tuvo Acceso a Cada Tecnología</h2></div>
+    <div style="position:relative;padding:20px 0;margin-bottom:24px">
+      <div style="position:absolute;left:120px;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,transparent,rgba(255,255,255,0.15),transparent)"></div>
+
+      <div style="display:grid;grid-template-columns:110px 20px 1fr;gap:0 0;align-items:start;row-gap:14px">
+
+        <div style="text-align:right;padding-right:16px;font-size:11px;font-family:'IBM Plex Mono',monospace;color:var(--muted2);padding-top:3px">2005–2007</div>
+        <div style="display:flex;justify-content:center;padding-top:6px"><div style="width:10px;height:10px;border-radius:50%;background:#ffd700;flex-shrink:0"></div></div>
+        <div style="padding-left:16px"><div style="font-size:12px;font-weight:700;color:#fff;margin-bottom:3px">IA Fundacional — Marvin Minsky + Ben Goertzel</div><div style="font-size:11px;color:var(--muted2)">Minsky acepta ser asesor de la Jeffrey Epstein VI Foundation. Goertzel propone roadmap AGI. Epstein entra en la IA más de 15 años antes de ChatGPT.</div></div>
+
+        <div style="text-align:right;padding-right:16px;font-size:11px;font-family:'IBM Plex Mono',monospace;color:var(--muted2);padding-top:3px">2010–2011</div>
+        <div style="display:flex;justify-content:center;padding-top:6px"><div style="width:10px;height:10px;border-radius:50%;background:#ff4060;flex-shrink:0"></div></div>
+        <div style="padding-left:16px"><div style="font-size:12px;font-weight:700;color:#fff;margin-bottom:3px">DARPA Network — Cenas privadas con la Directora</div><div style="font-size:11px;color:var(--muted2)">Boris Nikolic organiza cena DARPA (Nov 2010). Lowell Wood comparte briefings Reagan (Jul 2011). Piel electrónica enviada a Gates (Aug 2011). Quantum Ratchet con Wood.</div></div>
+
+        <div style="text-align:right;padding-right:16px;font-size:11px;font-family:'IBM Plex Mono',monospace;color:var(--muted2);padding-top:3px">2012–2013</div>
+        <div style="display:flex;justify-content:center;padding-top:6px"><div style="width:10px;height:10px;border-radius:50%;background:#a0a0ff;flex-shrink:0"></div></div>
+        <div style="padding-left:16px"><div style="font-size:12px;font-weight:700;color:#fff;margin-bottom:3px">Quantum Computing — Seth Lloyd entra a la red</div><div style="font-size:11px;color:var(--muted2)">Lloyd: primeras reuniones en MIT y Harvard. Quantum + fotosíntesis como área de investigación Epstein. Antony Valentini pide funding para variables ocultas.</div></div>
+
+        <div style="text-align:right;padding-right:16px;font-size:11px;font-family:'IBM Plex Mono',monospace;color:var(--muted2);padding-top:3px">2014–2015</div>
+        <div style="display:flex;justify-content:center;padding-top:6px"><div style="width:10px;height:10px;border-radius:50%;background:#4ade80;flex-shrink:0"></div></div>
+        <div style="padding-left:16px"><div style="font-size:12px;font-weight:700;color:#fff;margin-bottom:3px">CRISPR + AGI — $200K a Church, Bitcoin con Lloyd</div><div style="font-size:11px;color:var(--muted2)">George Church recibe $200K para CRISPR guide-RNAs (Sep 2014). Seth Lloyd + Joi Ito + Epstein discuten Bitcoin (May 2015). Epstein discute nomenclatura AGI con Larry Summers.</div></div>
+
+        <div style="text-align:right;padding-right:16px;font-size:11px;font-family:'IBM Plex Mono',monospace;color:var(--muted2);padding-top:3px">2016–2017</div>
+        <div style="display:flex;justify-content:center;padding-top:6px"><div style="width:10px;height:10px;border-radius:50%;background:#c084fc;flex-shrink:0"></div></div>
+        <div style="padding-left:16px"><div style="font-size:12px;font-weight:700;color:#fff;margin-bottom:3px">Consciencia Cuántica + Neuralink + Gene Drive</div><div style="font-size:11px;color:var(--muted2)">Penrose Institute lanzado (Feb 2017). Musk funda Neuralink — aparece en inbox de Epstein 3 veces (Mar-Abr 2017). CRISPR Gene Drive inducido por Epstein y Nowak+Church (Abr 2017). LSD+Chopra (Jun 2018).</div></div>
+
+        <div style="text-align:right;padding-right:16px;font-size:11px;font-family:'IBM Plex Mono',monospace;color:var(--muted2);padding-top:3px">2018–2019</div>
+        <div style="display:flex;justify-content:center;padding-top:6px"><div style="width:10px;height:10px;border-radius:50%;background:#ff4060;flex-shrink:0"></div></div>
+        <div style="padding-left:16px"><div style="font-size:12px;font-weight:700;color:#fff;margin-bottom:3px">Últimos correos — China Quantum + Pilotos Marina + Peter Thiel</div><div style="font-size:11px;color:var(--muted2)">China Quantum Superpower (Dec 2018). Thiel pregunta por rejuvenation+quantum (Jan 2019). Pilotos Marina + UFOs en Washington Post inbox (Abr 2019). Físicos revierten el tiempo (Mar 2019). Epstein muere: Aug 10, 2019.</div></div>
+
+      </div>
+    </div>
+
+    <!-- RESUMEN FINAL -->
+    <div style="background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:22px">
+      <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:#fff;margin-bottom:14px">📐 Patrón de Comportamiento Documentado</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;font-size:11px;color:var(--muted2);line-height:1.8">
+        <div>
+          <div style="font-weight:700;color:#ff6060;margin-bottom:6px">1. Acceso Pre-Mercado</div>
+          Epstein recibía papers de Science/Nature días después de publicarse, antes de que llegaran a medios mainstream. Su red le daba "early access" a tecnología que el público conocería 5-10 años después.
+        </div>
+        <div>
+          <div style="font-weight:700;color:#a0a0ff;margin-bottom:6px">2. Financiamiento sin Autoría</div>
+          Pagaba a científicos del MIT/Harvard para producir papers y artículos que luego se publicaban bajo el nombre del científico, no el suyo. Generaba IP y reputación científica indirectamente.
+        </div>
+        <div>
+          <div style="font-weight:700;color:#4ade80;margin-bottom:6px">3. Puente Ilegal Defensa-Privado</div>
+          Conectaba tecnología militar clasificada (DARPA, SDI) con capital privado (Gates, Thiel, Pritzker) y gobiernos extranjeros (Israel) sin protocolo oficial ni registro de seguridad.
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+</main>
+
+<script>
+const titles = {
+  'emails-critical': '🔴 Correos Críticos / Secretos de Estado',
+  'emails-uk': '🇬🇧 UK Government / Mandelson',
+  'emails-tech': '💻 Red Tech — Musk, Gates, Silicon Valley',
+  'emails-science': '🔬 Red Científica de Epstein',
+  'ufo': '👽 UFOs, Telepathy & Fenómenos No-Locales',
+  'network': '🕸️ Red de Contactos — 44+ Nodos',
+  'timeline': '📅 Timeline 2025–2026',
+  'topics': '🏷️ Taxonomía de Temas',
+  'arrests': '🚔 Arrestos, Dimisiones y Consecuencias',
+  'classified': '🔐 Info Clasificada — Correos Reales de jmail.world',
+  'techflow': '🔬 Red Tecnológica Epstein — Diagrama de Flujo'
+};
+
+function goto(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  
+  const page = document.getElementById('page-' + id);
+  if (page) page.classList.add('active');
+  
+  document.querySelectorAll('.nav-item').forEach(n => {
+    const oc = n.getAttribute('onclick') || '';
+    if (oc.includes("'" + id + "'")) n.classList.add('active');
+  });
+  
+  const titleEl = document.getElementById('page-title');
+  if (titleEl && titles[id]) titleEl.textContent = titles[id];
+  
+  window.scrollTo(0, 0);
+}
+
+function toggleAcc(header) {
+  header.classList.toggle('open');
+  const body = header.nextElementSibling;
+  if (body) body.classList.toggle('open');
+}
+
+window.addEventListener('load', () => {
+  goto('emails-critical');
+});
+</script>
+</body>
+</html>
